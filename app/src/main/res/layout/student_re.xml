@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="264dp"
+        android:layout_marginTop="-72dp"
+        android:src="@drawable/circle_top" />
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="266dp"
+        android:layout_marginBottom="-58dp"
+        android:src="@drawable/circle_bottom" />
+
+    <TextView
+        android:id="@+id/stuTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="95dp"
+        android:layout_centerHorizontal="true"
+        android:text="Student Credentials"
+        android:textSize="35dp"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"/>
+
+
+    <LinearLayout
+        android:id="@+id/formContainer2"
+        android:layout_width="600dp"
+        android:layout_height="450dp"
+        android:layout_below="@id/stuTitle"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/form_background"
+        android:orientation="vertical"
+
+        android:padding="20dp">
+
+        <EditText
+            android:id="@+id/stuName"
+            android:layout_marginTop="27dp"
+            android:layout_width="330dp"
+            android:layout_height="65dp"
+            android:background="@drawable/editbg"
+            android:hint="Name:"
+            android:inputType="textPersonName"
+            android:padding="10dp"
+            android:textColorHint="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/Roll"
+            android:layout_width="330dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="34dp"
+            android:background="@drawable/editbg"
+            android:hint="Roll no.:"
+            android:inputType="number"
+            android:padding="10dp"
+            android:textColorHint="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/classInfo"
+            android:layout_width="330dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="34dp"
+            android:background="@drawable/editbg"
+            android:hint="Class:"
+            android:inputType="number"
+            android:padding="10dp"
+            android:textColorHint="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/Section"
+            android:layout_width="330dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="34dp"
+            android:background="@drawable/editbg"
+            android:hint="Section:"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textColorHint="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+             />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/formContainer2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="65dp"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:textAllCaps="false"
+        android:text="@string/Button"
+
+        android:background="@drawable/button_background"
+        android:textStyle="bold"
+        android:textColor="@android:color/white" />
+</RelativeLayout>
