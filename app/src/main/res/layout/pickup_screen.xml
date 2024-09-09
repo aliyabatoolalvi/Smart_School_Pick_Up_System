@@ -7,13 +7,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
+        android:id="@+id/imageView6"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.5"
         android:background="#BBFFFFFF"
         android:src="@drawable/school"
-        tools:layout_editor_absoluteX="24dp"
-        tools:layout_editor_absoluteY="156dp">
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:elevation="0dp"
+        >
 
     </ImageView>
 
@@ -21,85 +24,60 @@
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="64dp"
         android:text="Student Pickup"
         android:textColor="#000000"
-        android:textSize="24sp"
+        android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/student_name"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="28dp"
-        android:text="Student Name:"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:layout_marginTop="88dp"
+        android:foregroundGravity="center"
 
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header" />
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
 
-    <TextView
-        android:id="@+id/grade"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="36dp"
-        android:text="Grade:"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/student_name" />
+
+        />
 
     <TextView
-        android:id="@+id/class_section"
-        android:layout_width="wrap_content"
+        android:id="@+id/wish"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="40dp"
-        android:text="Section:"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-
+        android:layout_marginHorizontal="34dp"
+        android:text="Wishing you a wonderful day!Goodbye!"
+        android:textColor="#552512"
+        android:textSize="25dp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/confirm_pickup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grade" />
+        app:layout_constraintTop_toBottomOf="@id/recycler"
+        app:layout_constraintVertical_bias="0.848">
 
+    </TextView>
 
     <Button
         android:id="@+id/confirm_pickup"
         android:layout_width="199dp"
         android:layout_height="72dp"
-        android:layout_marginStart="108dp"
-        android:layout_marginTop="464dp"
+        android:layout_marginTop="332dp"
         android:background="@drawable/custombtn"
         android:text="Confirm Pickup"
         android:textColor="@color/black"
         android:textSize="18dp"
-
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/class_section" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="68dp"
-        android:text="Wishing you a wonderful day!Goodbye!"
-        android:textColor="#552512"
-        android:textSize="25dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/confirm_pickup"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </TextView>
+        app:layout_constraintTop_toBottomOf="@+id/recycler" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

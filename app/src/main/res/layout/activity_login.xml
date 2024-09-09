@@ -83,7 +83,7 @@
             android:textAllCaps="true"
             android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
             android:text="Login"
-            android:background="@drawable/button_background"
+            android:background="@drawable/button_blue"
             android:textStyle="bold"
             android:layout_alignParentBottom="true"
             android:layout_marginVertical="190dp"
