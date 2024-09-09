@@ -7,4 +7,91 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/school1" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="140dp"
+            android:text="Login to continue"
+            android:textColor="@android:color/white"
+            android:textSize="50dp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/form"
+            android:layout_width="600dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+
+            android:background="@drawable/form_background_light"
+
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <EditText
+                android:id="@+id/Name"
+                android:layout_width="330dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="27dp"
+                android:background="@drawable/editbg"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:padding="10dp"
+                android:textColorHint="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="330dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="34dp"
+                android:background="@drawable/editbg"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="10dp"
+                android:textColorHint="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <Button
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerHorizontal="true"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
+            android:textAllCaps="true"
+            android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+            android:text="Login"
+            android:background="@drawable/button_background"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_marginVertical="190dp"
+
+
+
+
+            />
+
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
