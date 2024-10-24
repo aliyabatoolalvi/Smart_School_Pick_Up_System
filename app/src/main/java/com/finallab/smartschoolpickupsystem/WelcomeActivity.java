@@ -1,5 +1,6 @@
 package com.finallab.smartschoolpickupsystem;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -14,6 +15,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
+
 
     }
 }
