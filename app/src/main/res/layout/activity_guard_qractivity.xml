@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToOutline="true"
+    android:background="#5AA9E6"
+    tools:context=".GuardQRActivity">
+    <!-- Auto layout, variables, and unit scale are not yet supported -->
+    <!-- Auto layout, variables, and unit scale are not yet supported -->
+    <TextView
+        android:id="@+id/authenticat"
+        android:layout_width="349dp"
+        android:layout_height="108dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="62dp"
+        android:layout_marginTop="84dp"
+        android:layout_marginRight="72dp"
+        android:fontFamily="@font/montserrat_light"
+        android:gravity="center_horizontal|top"
+        android:text="@string/authenticat"
+        android:textAppearance="@style/authenticate"
+        android:textColor="#F2F5FFFF"
+        android:textSize="30sp" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/qr"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="250dp"
+        />
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="500dp"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:textAllCaps="false"
+        android:text="Scan"
+        android:background="@drawable/button_background"
+        android:textStyle="bold" />
+    <!--
+      Font family: Manrope
+      Line height: 44sp
+      -->
+
+    <TextView
+        android:id="@+id/scan_your_q"
+        android:layout_width="wrap_content"
+        android:layout_height="98dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="63dp"
+        android:layout_marginTop="630dp"
+        android:layout_marginRight="63dp"
+        android:gravity="center_horizontal|top"
+        android:text="Scan your QR to proceed"
+        android:textAppearance="@style/scan_your_q"
+        android:textSize="30dp" />
+
+
+
+</RelativeLayout>

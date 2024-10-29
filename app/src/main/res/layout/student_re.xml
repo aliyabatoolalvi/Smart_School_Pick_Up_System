@@ -114,7 +114,7 @@
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
         android:textAllCaps="false"
-        android:text="@string/Button"
+        android:text="@string/addition"
 
         android:background="@drawable/button_background"
         android:textStyle="bold" />

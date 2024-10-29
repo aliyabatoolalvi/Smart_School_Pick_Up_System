@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Smart School Pick Up System</string>
     <string name="heading">Parent/Guardian\n   Registration</string>
-    <string name="Button">Add Student</string>
-
+    <string name="addition">Add Student</string>
+    <string name="authenticat">
+        Authenticate using your QR Code
+    </string>
 </resources>
