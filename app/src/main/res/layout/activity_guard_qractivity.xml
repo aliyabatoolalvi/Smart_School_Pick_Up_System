@@ -28,23 +28,23 @@
 
     <ImageView
         android:id="@+id/imageView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/qr"
+        android:layout_width="420dp"
+        android:layout_height="320dp"
+        app:srcCompat="@drawable/guardpic"
         android:layout_alignParentRight="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="200dp"
         />
     <Button
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="500dp"
+        android:layout_marginTop="690dp"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
         android:textAllCaps="false"
-        android:text="Scan"
+        android:text="Open Scanner"
         android:background="@drawable/button_background"
         android:textStyle="bold" />
     <!--
@@ -65,18 +65,6 @@
         android:gravity="center_horizontal|top"
         android:text="Scan your QR to proceed"
         android:textAppearance="@style/scan_your_q"
-        android:textSize="30dp" />
-    <ImageView
-        android:id="@+id/arrow_2"
-        android:layout_width="90.01dp"
-        android:layout_height="12.16dp"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="170.14dp"
-        android:layout_marginRight="170.14dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="716dp"
-        android:src="@drawable/arrowwhite"
-        />
-
+        android:textSize="26dp" />
 
 </RelativeLayout>

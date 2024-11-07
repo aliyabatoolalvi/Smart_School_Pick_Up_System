@@ -41,8 +41,6 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // for qr code
-    implementation("com.google.zxing:core:3.4.1")
-    implementation("androidmads.library.qrgenearator:QRGenearator:1.0.3")
+
 
 }

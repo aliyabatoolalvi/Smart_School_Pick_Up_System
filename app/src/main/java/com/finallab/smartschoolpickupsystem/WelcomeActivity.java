@@ -15,7 +15,9 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-
+// for qr code
+//        implementation("com.google.zxing:core:3.4.1")
+//        implementation("androidmads.library.qrgenearator:QRGenearator:1.0.3")
 
     }
 }

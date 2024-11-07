@@ -13,34 +13,39 @@
         android:theme="@style/Theme.SmartSchoolPickUpSystem"
         tools:targetApi="31">
         <activity
-            android:name=".GuardQRActivity"
+            android:name=".StudentList"
             android:exported="false" />
         <activity
-            android:name=".Parent_list_Activity"
+            android:name=".StudentListAuthorizationActivity"
             android:exported="false" />
+        <activity
+            android:name=".GuardQRActivity"
+            android:exported="false" />
+
         <activity
             android:name=".StudentRegisteration"
             android:exported="false" />
-        <activity
-            android:name=".FingerRegisteration"
-            android:exported="false" />
-        <activity
-            android:name=".PickUp"
-            android:exported="false" />
+
+
         <activity
             android:name=".ParentRegisteration"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".WelcomeActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true" >
+
+
+        </activity>
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="true">
+
         </activity>
 
         <meta-data
