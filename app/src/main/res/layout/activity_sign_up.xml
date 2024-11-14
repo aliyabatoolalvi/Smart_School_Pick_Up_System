@@ -2,11 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/main1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
-
+    tools:context=".SignUp">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -26,8 +25,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="140dp"
-            android:text="Login to continue"
+            android:layout_marginTop="100dp"
+            android:text="SignUp"
             android:textColor="@android:color/white"
             android:textSize="50dp"
             android:textStyle="bold" />
@@ -45,9 +44,35 @@
 
             android:orientation="vertical"
             android:padding="20dp">
+            <EditText
+                android:id="@+id/schoolName"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/editbg"
+                android:hint="School Name"
+                android:inputType="text"
+                android:padding="10dp"
+                android:textColorHint="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- School Address EditText -->
+            <EditText
+                android:id="@+id/schoolAddress"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/editbg"
+                android:hint="School Address"
+                android:inputType="textPostalAddress"
+                android:padding="10dp"
+                android:textColorHint="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/Name"
+                android:id="@+id/email1"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:layout_marginTop="27dp"
@@ -58,11 +83,8 @@
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
-
-
-
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/password1"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:layout_marginTop="34dp"
@@ -73,28 +95,37 @@
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
+            <TextView
+                android:id="@+id/loginLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? Login"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+
         </LinearLayout>
+
         <Button
-            android:id="@+id/next"
+            android:id="@+id/Signup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
+            android:text="Signup"
             android:textAllCaps="true"
-            android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
-            android:text="Login"
             android:backgroundTint="#0090E9"
             app:background="@drawable/button_blue"
+            android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
             android:textStyle="bold"
-            android:layout_alignParentBottom="true"
-            android:layout_marginVertical="190dp"
+            android:layout_marginBottom="60dp" />
 
 
-
-
-            />
 
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,9 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-
-    >
+    android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
@@ -27,29 +25,31 @@
             android:background="#5AA9E6">
 
             <TextView
-                android:id="@+id/CNICgu"
+                android:id="@+id/classstu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
-                android:text="CNIC"
+                android:text="Class"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/namegu"
-                app:layout_constraintTop_toBottomOf="@+id/namegu"
+                app:layout_constraintStart_toStartOf="@+id/namestu"
+                app:layout_constraintTop_toBottomOf="@+id/namestu"
                 app:layout_constraintVertical_bias="0.193" />
 
             <TextView
-                android:id="@+id/namegu"
+                android:id="@+id/namestu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
                 android:text="Name"
                 android:textColor="#FFFFFF"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/classstu"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,12 +59,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/delG"
+                app:layout_constraintEnd_toStartOf="@+id/delS"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/baseline_edit_24" />
 
             <ImageView
-                android:id="@+id/delG"
+                android:id="@+id/delS"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="21dp"
@@ -72,6 +72,18 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/baseline_delete_24" />
+
+            <TextView
+                android:id="@+id/sectionstu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Section"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/classstu"
+                app:layout_constraintStart_toEndOf="@+id/classstu"
+                app:layout_constraintTop_toTopOf="@+id/classstu" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

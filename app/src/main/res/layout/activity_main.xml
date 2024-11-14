@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTint="#8F009688"
-    tools:context=".StudentList">
+    tools:context=".Activities.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -23,10 +23,10 @@
             <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                app:tint="#8D03A9F4"
+                android:tint="#8D03A9F4"
                 app:srcCompat="@drawable/haeder" />
 
         </androidx.cardview.widget.CardView>
@@ -72,8 +72,10 @@
                 android:layout_height="match_parent">
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -82,7 +84,7 @@
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/floatingActionButton"
+            android:id="@+id/addS"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -90,10 +92,6 @@
             android:layout_marginBottom="32dp"
             android:clickable="true"
             android:text="Add New Student"
-            android:background="@drawable/button_background"
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
-            android:textAllCaps="false"
             android:textSize="20sp"
             app:backgroundTint="#D403A9F4"
             app:icon="@drawable/baseline_add_24"

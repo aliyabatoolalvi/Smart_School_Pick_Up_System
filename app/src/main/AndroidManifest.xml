@@ -12,6 +12,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartSchoolPickUpSystem"
         tools:targetApi="31">
+
+        <activity
+            android:name=".Activities.GuardianDetails"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SplashActivity"
+            android:exported="true">
+
+        </activity>
+        <activity
+            android:name=".Activities.AddStudentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.StudentDetails"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.AddGuardian"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.MainActivity"
+            android:exported="true">
+
+        </activity>
         <activity
             android:name=".StudentList"
             android:exported="false" />
@@ -30,11 +53,7 @@
         <activity
             android:name=".ParentRegisteration"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -45,7 +64,11 @@
         <activity
             android:name=".WelcomeActivity"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <meta-data

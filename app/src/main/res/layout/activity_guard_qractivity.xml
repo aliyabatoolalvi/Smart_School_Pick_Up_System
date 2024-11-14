@@ -45,7 +45,9 @@
         android:paddingEnd="40dp"
         android:textAllCaps="false"
         android:text="Open Scanner"
-        android:background="@drawable/button_background"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/background_color"
+        app:background="@drawable/button_background"
         android:textStyle="bold" />
     <!--
       Font family: Manrope
