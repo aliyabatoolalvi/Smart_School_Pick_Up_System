@@ -21,7 +21,7 @@ abstract class AppDatabase : RoomDatabase() {
             if (instance == null)
                 instance = Room.databaseBuilder(
                     ctx, AppDatabase::class.java,
-                    "database_v1"
+                    "database_v2"
                 )
                     .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()

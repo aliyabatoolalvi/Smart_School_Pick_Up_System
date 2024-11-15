@@ -12,4 +12,5 @@ class Guardian (
     var number: String,
     var CNIC: String,
     var  Email: String,
+    var QRcodeData: String
 )

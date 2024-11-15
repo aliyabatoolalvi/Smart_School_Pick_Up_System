@@ -62,7 +62,7 @@
                 android:id="@+id/schoolAddress"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:background="@drawable/editbg"
                 android:hint="School Address"
                 android:inputType="textPostalAddress"
@@ -75,7 +75,7 @@
                 android:id="@+id/email1"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
-                android:layout_marginTop="27dp"
+                android:layout_marginTop="15dp"
                 android:background="@drawable/editbg"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
@@ -87,7 +87,7 @@
                 android:id="@+id/password1"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
-                android:layout_marginTop="34dp"
+                android:layout_marginTop="15dp"
                 android:background="@drawable/editbg"
                 android:hint="Password"
                 android:inputType="textPassword"
@@ -123,7 +123,7 @@
             app:background="@drawable/button_blue"
             android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
             android:textStyle="bold"
-            android:layout_marginBottom="60dp" />
+            android:layout_marginBottom="80dp" />
 
 
 

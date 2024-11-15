@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "659591886542",
+    "project_id": "smart-school-pick-up-sys-c73a9",
+    "storage_bucket": "smart-school-pick-up-sys-c73a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659591886542:android:1bfba475eafe3d01a7429f",
+        "android_client_info": {
+          "package_name": "com.finallab.smartschoolpickupsystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBujRr2r9d-1jxQxTswDtaM2v8h1rGx50"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

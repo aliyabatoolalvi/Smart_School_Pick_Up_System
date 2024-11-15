@@ -73,6 +73,17 @@
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/registersign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New here? Register"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true"/>
         </LinearLayout>
         <Button
             android:id="@+id/next"

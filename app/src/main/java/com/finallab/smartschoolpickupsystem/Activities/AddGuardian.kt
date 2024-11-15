@@ -32,6 +32,7 @@ class AddGuardian : AppCompatActivity() {
                         number = binding.number.editText?.text.toString(),
                         CNIC = binding.CNIC.editText?.text.toString(),
                         Email = binding.Email.editText?.text.toString()
+                        QRcodeData =
                     )
                     AppDatabase.getDatabase(this).guardianDao().insert(student)
                     Toast.makeText(this, "Guardian Registered", Toast.LENGTH_SHORT).show()
