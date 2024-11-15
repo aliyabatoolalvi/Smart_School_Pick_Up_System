@@ -4,3 +4,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android) apply false
 }
 val compileSdkVersion by extra(35)
+buildscript {
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.2")
+    }
+}

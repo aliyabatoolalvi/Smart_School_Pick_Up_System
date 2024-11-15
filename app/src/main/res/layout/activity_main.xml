@@ -26,7 +26,8 @@
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
-                android:tint="#8D03A9F4"
+                app:tint="#8D03A9F4"
+
                 app:srcCompat="@drawable/haeder" />
 
         </androidx.cardview.widget.CardView>
@@ -93,7 +94,7 @@
             android:clickable="true"
             android:text="Add New Student"
             android:textSize="20sp"
-            app:backgroundTint="#D403A9F4"
+            app:backgroundTint="#D450B7E6"
             app:icon="@drawable/baseline_add_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
