@@ -24,8 +24,8 @@ class StudentDetails : AppCompatActivity() {
         val id = intent.getIntExtra("id", -1)
         student = AppDatabase.getDatabase(this).studentDao().getstudentById(id)
 
-        binding.nameS.text = student.Sname
-        binding.rollno.text = student.reg
+        binding.nameS.text = "Name: " + student.Sname
+        binding.rollno.text = "Reg no: " + student.reg
         binding.ClassS.text = "Class: " + student.Class
         binding.sectionS.text = "Section: " + student.section
 

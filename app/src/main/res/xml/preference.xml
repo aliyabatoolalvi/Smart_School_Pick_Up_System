@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Example of a Switch Preference -->
+    <SwitchPreferenceCompat
+        android:key="pref_enable_feature"
+        android:title="Enable Feature"
+        android:summary="Enable or disable this feature"
+        android:defaultValue="false"
+       />
+
+    <!-- Example of a Text Preference -->
+    <EditTextPreference
+        android:key="pref_username"
+        android:title="Username"
+        android:summary="Enter your username"
+        android:defaultValue=""
+        android:inputType="text"
+        android:maxLines="1" />
+
+</PreferenceScreen>

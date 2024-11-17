@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".PrivacyFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center"
+        android:background="#5B7FC8F8"
+        android:layout_marginHorizontal="35dp"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:adjustViewBounds="true"
+            app:srcCompat="@drawable/frame" />
+
+        <TextView
+            android:id="@+id/privacyPolicyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Privacy Policy"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/privacyPolicyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="At Smart School Pickup System, we value your privacy. We collect your personal data such as your name and email to ensure the safety and smooth operation of the pickup process. Your data is stored securely and will not be shared with third parties without your consent. We may use your data for sending notifications and updates related to the pickup system. By using this app, you agree to the terms outlined in this Privacy Policy."
+            android:textSize="16sp"
+            android:justificationMode="inter_word"
+            android:lineSpacingExtra="8dp"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/black"
+            />
+
+        <TextView
+            android:id="@+id/dataCollectionInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Data We Collect: School Name, Email."
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/securityMeasuresInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Your data is stored securely and we use encryption to protect it."
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/consentText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- By using this app, you consent to the collection and usage of your data as described."
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- About Us Section -->
+        <TextView
+            android:id="@+id/about"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="About Us"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="1dp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:layout_marginVertical="30dp" />
+
+        <TextView
+            android:id="@+id/aboutdes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/aboutdesc"
+            android:textSize="18sp"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/black"
+            android:justificationMode="inter_word"
+             />
+
+        <!-- Contact Us Button -->
+        <Button
+            android:id="@+id/buttonContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact Us"
+            android:textSize="16sp"
+            android:layout_gravity="center"
+            android:background="@color/background_color"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+</ScrollView>
