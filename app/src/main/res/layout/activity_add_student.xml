@@ -44,7 +44,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_keyboard_arrow_right_24"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:rotation="180"
 
+                android:contentDescription="Back Button"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="22dp"
+                android:layout_marginVertical="40dp"
+
+                />
             <TextView
                 android:id="@+id/Stitle"
                 android:layout_width="wrap_content"
@@ -135,7 +150,7 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/Class"
+                        android:id="@+id/studentClass"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -164,7 +179,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/Class">
+                        app:layout_constraintTop_toBottomOf="@+id/studentClass">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"

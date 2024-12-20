@@ -45,7 +45,7 @@ class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: Corou
         if (holder is StudentViewHolder) {
             val student = items.get(position) as Student
             holder.binding.namestu.text = student.Sname
-            holder.binding.classstu.text = "Class: " + student.Class
+            holder.binding.classstu.text = "Class: " + student.studentClass
             holder.binding.sectionstu.text = "Section: " + student.section
 
             holder.binding.delS.setOnClickListener {
@@ -55,9 +55,8 @@ class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: Corou
                     .setPositiveButton("Yesss") { _, _ ->
                         // Use lifecycleScope for database and UI updates
                         lifecycleScope.launch {
-                            // Delete from Room database
+
                             AppDatabase.getDatabase(holder.itemView.context).studentDao().delete(student)
-                            // Remove item from list and update RecyclerView
                             items.removeAt(holder.adapterPosition)
                             notifyItemRemoved(holder.adapterPosition)
                             Toast.makeText(holder.itemView.context, "Record deleted", Toast.LENGTH_SHORT)
@@ -76,6 +75,7 @@ class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: Corou
                         holder.itemView.context,
                         StudentDetails::class.java
                     ).putExtra("id", student.id)
+
                 )
             }
         }
@@ -96,5 +96,4 @@ class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: Corou
         }
     }
 }
-
 

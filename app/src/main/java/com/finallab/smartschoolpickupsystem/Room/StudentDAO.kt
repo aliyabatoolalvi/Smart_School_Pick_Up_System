@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.finallab.smartschoolpickupsystem.DataModels.Student
 
 @Dao
@@ -19,5 +20,8 @@ interface StudentDAO {
 
     @Query("Select * from Student where id=:id")
     fun getstudentById(id: Int): Student
+
+    @Update
+    fun update(student: Student)
 
 }

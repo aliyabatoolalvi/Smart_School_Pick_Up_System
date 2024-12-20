@@ -8,6 +8,22 @@
     android:clipToOutline="true"
     android:background="#5AA9E6"
     tools:context=".GuardQRActivity">
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_keyboard_arrow_right_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:rotation="180"
+
+        android:contentDescription="Back Button"
+        android:background="?android:attr/selectableItemBackground"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="22dp"
+        android:layout_marginVertical="80dp"
+
+        />
     <!-- Auto layout, variables, and unit scale are not yet supported -->
     <!-- Auto layout, variables, and unit scale are not yet supported -->
     <TextView
@@ -17,13 +33,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="62dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="64dp"
         android:layout_marginRight="72dp"
         android:fontFamily="@font/montserrat_bold"
         android:gravity="center_horizontal|top"
         android:text="@string/authenticat"
         android:textAppearance="@style/authenticate"
-        android:textColor="#F2F5FFFF"
+        android:textColor="@color/black"
         android:textSize="25sp" />
 
     <ImageView

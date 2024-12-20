@@ -2,6 +2,7 @@ package com.finallab.smartschoolpickupsystem.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,10 +18,15 @@ class MainActivity : AppCompatActivity() {
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+
         binding.addS.setOnClickListener {
+
             startActivity(Intent(this, AddStudentActivity::class.java))
         }
-
+        binding.backButton.setOnClickListener{
+            super.onBackPressed()
+        }
 
 
     }

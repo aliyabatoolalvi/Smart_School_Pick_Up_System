@@ -8,9 +8,11 @@ class Guardian (
     @PrimaryKey(autoGenerate = true)
     var id: Int=0,
     var studentID:Int,
+    var studentDocumentID : String,
     var Gname: String,
     var number: String,
     var CNIC: String,
     var  Email: String,
-    var QRcodeData: String
+    var QRcodeData: String,
+    var QRcodeBase64: String
 )

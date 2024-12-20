@@ -11,5 +11,16 @@
     <string name="close_nav">Close navigation drawer</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="aboutdesc">      Smart School Pickup System is a mobile application designed to streamline and secure the school pickup process for parents and guardians. The app enables parents to easily check-in and pick up their children at school by scanning QR codes, verifying their identity through biometric authentication, and ensuring the safety and efficiency of the process. The app is intended to provide real-time updates and notifications to parents regarding their child\'s pickup status, enhancing both convenience and security.</string>
+    <string-array name="language_options">
+        <item>English</item>
+        <item>Urdu</item>
+        <item>French</item>
+    </string-array>
+
+    <string-array name="language_values">
+        <item>en</item>
+        <item>ur</item>
+        <item>fr</item>
+    </string-array>
 
 </resources>

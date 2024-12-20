@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignUp">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -17,6 +18,7 @@
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             app:srcCompat="@drawable/school1" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
@@ -39,11 +41,11 @@
             android:layout_marginEnd="20dp"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-
             android:background="@drawable/form_background_light"
-
             android:orientation="vertical"
             android:padding="20dp">
+
+            <!-- School Name EditText -->
             <EditText
                 android:id="@+id/schoolName"
                 android:layout_width="match_parent"
@@ -52,6 +54,7 @@
                 android:background="@drawable/editbg"
                 android:hint="School Name"
                 android:inputType="text"
+                android:maxLength="50"
                 android:padding="10dp"
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
@@ -61,16 +64,21 @@
             <EditText
                 android:id="@+id/schoolAddress"
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
+                android:layout_height="wrap_content"
+                android:minHeight="65dp"
+                android:maxLines="3"
+                android:maxLength="100"
+                android:scrollbars="vertical"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/editbg"
                 android:hint="School Address"
-                android:inputType="textPostalAddress"
+                android:inputType="textPostalAddress|textMultiLine"
                 android:padding="10dp"
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
+            <!-- Email EditText -->
             <EditText
                 android:id="@+id/email1"
                 android:layout_width="match_parent"
@@ -79,10 +87,13 @@
                 android:background="@drawable/editbg"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
+                android:maxLength="50"
                 android:padding="10dp"
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
+
+            <!-- Password EditText -->
             <EditText
                 android:id="@+id/password1"
                 android:layout_width="match_parent"
@@ -91,10 +102,12 @@
                 android:background="@drawable/editbg"
                 android:hint="Password"
                 android:inputType="textPassword"
+                android:maxLength="20"
                 android:padding="10dp"
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/loginLink"
                 android:layout_width="wrap_content"
@@ -104,8 +117,7 @@
                 android:textSize="16sp"
                 android:layout_marginTop="8dp"
                 android:clickable="true"
-                android:focusable="true"/>
-
+                android:focusable="true" />
 
         </LinearLayout>
 
@@ -124,8 +136,5 @@
             android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
             android:textStyle="bold"
             android:layout_marginBottom="80dp" />
-
-
-
     </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -54,6 +54,8 @@
                 android:layout_marginTop="27dp"
                 android:background="@drawable/editbg"
                 android:hint="Email"
+                android:maxLines="1"
+
                 android:inputType="textEmailAddress"
                 android:padding="10dp"
                 android:textColorHint="@color/white"
@@ -69,6 +71,7 @@
                 android:layout_marginTop="34dp"
                 android:background="@drawable/editbg"
                 android:hint="Password"
+                android:maxLines="1"
                 android:inputType="textPassword"
                 android:padding="10dp"
                 android:textColorHint="@color/white"

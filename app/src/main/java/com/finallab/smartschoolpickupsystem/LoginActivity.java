@@ -9,12 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,55 +27,46 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        FirebaseApp.initializeApp(this);
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
+
         setContentView(R.layout.activity_login);
+
         mAuth = FirebaseAuth.getInstance();
         emailEditText = findViewById(R.id.Name);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.next);
-        registersign= findViewById(R.id.registersign);
+        registersign = findViewById(R.id.registersign);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = emailEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString().trim();
+        loginButton.setOnClickListener(v -> {
+            String email = emailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
 
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                    Toast.makeText(LoginActivity.this, "Enter email and password", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+                Toast.makeText(LoginActivity.this, "Enter email and password", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                    // Navigate to main activity or dashboard
-                                } else {
-                                    Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                }
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        });
-            }
-        });
-        registersign.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate to Signin
-                Intent intent = new Intent(LoginActivity.this, SignUp.class);
-                startActivity(intent);
-                finish();  // Optional: finish the SignUpActivity to prevent returning to it
-            }
+                        }
+                    });
         });
 
-
+        registersign.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, SignUp.class);
+            startActivity(intent);
+            finish();
+        });
     }
 }

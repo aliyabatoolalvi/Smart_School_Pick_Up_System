@@ -26,7 +26,7 @@
     </group>
 
     <item
-        android:id="@+id/logout"
+        android:id="@+id/menulogout"
         android:icon="@drawable/baseline_logout_24"
         android:title="Logout" />
 

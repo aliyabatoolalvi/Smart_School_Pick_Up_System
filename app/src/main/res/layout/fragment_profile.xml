@@ -2,7 +2,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileFragment">
+    tools:context=".ProfileFragment"
+    android:background="@drawable/bg">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
 
     <!-- First LinearLayout containing profile details -->
     <LinearLayout
@@ -10,14 +22,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginHorizontal="35dp"
-        android:layout_marginTop="70dp">
+        android:layout_marginTop="50dp">
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:src="@drawable/school1"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="20dp" />
+            android:layout_height="300dp"
+            android:src="@drawable/blueschool"
+            android:scaleType="centerInside"
+            android:layout_marginBottom="20dp"
+            />
 
         <TextView
             android:id="@+id/proftitle"
@@ -30,42 +43,90 @@
             android:gravity="center"
             android:textColor="@color/black" />
 
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name of School: "
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:layout_marginBottom="20dp" />
 
-        <TextView
-            android:id="@+id/textView11"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Email: "
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:layout_marginBottom="20dp" />
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/nameofschool"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Name of School: "
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp" />
 
-        <TextView
-            android:id="@+id/address"
+            <TextView
+                android:id="@+id/nameschool"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" "
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Address: "
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:layout_marginBottom="20dp" />
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Email: "
+                android:textStyle="bold"
+
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+
+            <TextView
+                android:id="@+id/emailschool"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Address: "
+                android:textStyle="bold"
+
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+
+            <TextView
+                android:id="@+id/addressschool"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+        </LinearLayout>
 
         <Button
-            android:id="@+id/secondButton"
+            android:id="@+id/logout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:background="#D50000"
+            android:textAllCaps="false"
             android:text="Logout"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="17sp"
             android:textStyle="bold"
             android:gravity="end"
             android:drawableLeft="@drawable/baseline_logout_24"
@@ -76,19 +137,21 @@
     <!-- Second LinearLayout for the summary, now placed at the bottom -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="100dp"
+        android:layout_marginVertical="50dp"
         android:gravity="left"
         android:padding="15dp"
-        android:background="@drawable/haeder"
+        android:background="@drawable/editbg"
+
+
         android:layout_marginHorizontal="35dp"
 
         >
 
         <TextView
-            android:id="@+id/textViewName"
+            android:id="@+id/summary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -108,7 +171,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:gravity="center"
-                android:text="No of Students: "
+                android:text="Total Students: "
                 android:textSize="18sp" />
 
             <TextView
@@ -132,7 +195,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:gravity="center"
-                android:text="No of Guardian: "
+                android:text="Total Guardians: "
                 android:textSize="18sp" />
 
             <TextView
@@ -155,8 +218,10 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:drawableLeft=""
+            android:textAllCaps="false"
             />
     </LinearLayout>
 
+    </LinearLayout>
+</ScrollView>
 </FrameLayout>

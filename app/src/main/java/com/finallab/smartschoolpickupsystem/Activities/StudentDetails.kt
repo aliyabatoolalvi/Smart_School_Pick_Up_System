@@ -2,6 +2,7 @@ package com.finallab.smartschoolpickupsystem.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,20 +27,25 @@ class StudentDetails : AppCompatActivity() {
 
         binding.nameS.text = "Name: " + student.Sname
         binding.rollno.text = "Reg no: " + student.reg
-        binding.ClassS.text = "Class: " + student.Class
+        binding.ClassS.text = "Class: " + student.studentClass
         binding.sectionS.text = "Section: " + student.section
 
         binding.addG.setOnClickListener {
-            startActivity(Intent(this, AddGuardian::class.java).putExtra("id", id))
+            startActivity(Intent(this, AddGuardian::class.java)
+                .putExtra("id", id)
+                .putExtra("studentDocumentID", student.studentDocId)) // This is the studentDocId
+        }
 
+        binding.backButton.setOnClickListener{
+            super.onBackPressed()
+        }
 
     }
-}
     override fun onResume() {
         super.onResume()
         val adapter= RecyclerViewAdapter(AppDatabase.getDatabase(this).guardianDao().getAllguardians(student.id).toMutableList(), lifecycleScope)
         binding.recyclerView.adapter=adapter
         binding.recyclerView.layoutManager= LinearLayoutManager(this)
     }
-}
 
+}

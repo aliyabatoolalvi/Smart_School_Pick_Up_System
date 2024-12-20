@@ -9,9 +9,10 @@ class Student (
     var id: Int=0,
     var Sname: String,
     var reg: String,
-    var Class: String,
+    var studentClass: String,
     var section: String,
+    var studentDocId: String
 
-){
+    ){
 
 }

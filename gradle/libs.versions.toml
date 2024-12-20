@@ -10,6 +10,7 @@ constraintlayout = "2.1.4"
 kotlin = "1.9.22"
 coreKtx = "1.15.0"
 googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
+playServices = "17.0.0"
 playServicesMaps = "18.2.0"
 
 [libraries]
@@ -21,6 +22,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+play-services = { module = "com.google.android.gms:play-services", version.ref = "playServices" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 
 [plugins]

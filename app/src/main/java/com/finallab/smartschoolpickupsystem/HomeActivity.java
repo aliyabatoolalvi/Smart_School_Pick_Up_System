@@ -1,5 +1,6 @@
 package com.finallab.smartschoolpickupsystem;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -12,9 +13,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +73,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .beginTransaction()
                     .replace(R.id.fragment_container, new PrivacyFragment())
                     .commit();
-        } else if (itemId == R.id.logout) {
+        } else if (itemId == R.id.menulogout) {
+
             Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();
+                mAuth.signOut();
+            Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;

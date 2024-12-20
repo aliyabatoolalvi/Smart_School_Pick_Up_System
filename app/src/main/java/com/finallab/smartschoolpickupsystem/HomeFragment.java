@@ -1,58 +1,32 @@
 package com.finallab.smartschoolpickupsystem;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.finallab.smartschoolpickupsystem.Activities.AddStudentActivity;
+import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ViewPager2 viewPager;
+    private Button listStudentsButton, addStudentButton;
+    private TextView navigationText;
 
     public HomeFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -60,5 +34,43 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        viewPager = view.findViewById(R.id.viewPager);
+        listStudentsButton = view.findViewById(R.id.listStudentsButton);
+        addStudentButton = view.findViewById(R.id.addStudentButton);
+        navigationText = view.findViewById(R.id.navigationText);
+
+        navigationText.setText("Welcome! Use the buttons below to manage students or enjoy the carousel.");
+
+        setupCarousel();
+
+        listStudentsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+        });
+
+        addStudentButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AddStudentActivity.class);
+            startActivity(intent);
+        });
+
+    }
+
+    private void setupCarousel() {
+        List<Integer> images = new ArrayList<>();
+        images.add(R.drawable.rushhourschool); // Replace with your actual drawable resource IDs
+        images.add(R.drawable.titleimage);
+        images.add(R.drawable.lineongate);
+        images.add(R.drawable.qrbanner);
+        images.add(R.drawable.rushhourschool2);
+
+
+        CarouselAdaptor adapter = new CarouselAdaptor(images);
+        viewPager.setAdapter(adapter);
     }
 }

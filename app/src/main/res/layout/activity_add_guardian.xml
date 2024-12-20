@@ -9,6 +9,7 @@
 
     tools:context=".Activities.AddGuardian">
 
+
     <ImageView
         android:id="@+id/imageView4"
         android:layout_width="120dp"
@@ -27,6 +28,7 @@
         android:scaleType="fitEnd"
         android:src="@drawable/ellipesr"
         app:tint="#4DA8E4"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -41,7 +43,22 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:context=".Activities.AddStudentActivity">
 
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_keyboard_arrow_right_24"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:rotation="180"
 
+            android:contentDescription="Back Button"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="22dp"
+            android:layout_marginVertical="40dp"
+
+            />
         <TextView
             android:id="@+id/textview10"
             android:layout_width="wrap_content"
