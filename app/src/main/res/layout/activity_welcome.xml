@@ -65,14 +65,16 @@
             android:textSize="36sp"
              />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/advance"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
             android:layout_marginHorizontal="150dp"
             android:layout_marginTop="750dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Click on it"
             app:srcCompat="@drawable/advance" />
 
     </RelativeLayout>

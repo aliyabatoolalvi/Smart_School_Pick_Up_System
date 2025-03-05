@@ -78,16 +78,42 @@
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/registersign"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="New here? Register"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp"
-                android:clickable="true"
-                android:focusable="true"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="18dp">
+
+                <TextView
+                    android:id="@+id/forgot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="Forgot Password?"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:gravity="start"
+                    android:layout_weight="2"
+                    />
+                <TextView
+                    android:id="@+id/registersign"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/button_blue"
+                    android:text="New here? Register"
+                    android:gravity="end"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    />
+
+            </LinearLayout>
+
         </LinearLayout>
         <Button
             android:id="@+id/next"
@@ -105,7 +131,6 @@
             android:textStyle="bold"
             android:layout_alignParentBottom="true"
             android:layout_marginVertical="190dp"
-
 
 
 

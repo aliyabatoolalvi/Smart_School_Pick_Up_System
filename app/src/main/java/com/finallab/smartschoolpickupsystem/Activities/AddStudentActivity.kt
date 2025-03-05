@@ -1,5 +1,6 @@
 package com.finallab.smartschoolpickupsystem.Activities
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -10,6 +11,7 @@ import com.finallab.smartschoolpickupsystem.databinding.ActivityAddStudentBindin
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AddStudentActivity : AppCompatActivity() {
+    lateinit var progressDialog: ProgressDialog
     private lateinit var binding: ActivityAddStudentBinding
     private val firestore = FirebaseFirestore.getInstance() // Initialize Firestore
 
@@ -17,7 +19,9 @@ class AddStudentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddStudentBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        val progressDialog= ProgressDialog(this)
+        progressDialog.setMessage("Please wait!")
+        progressDialog.setCancelable(false)
         binding.regS.setOnClickListener {
             if (binding.Sname.editText?.text.toString().isEmpty() ||
                 binding.reg.editText?.text.toString().isEmpty() ||

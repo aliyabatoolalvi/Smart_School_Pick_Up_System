@@ -54,6 +54,7 @@
                 android:background="@drawable/editbg"
                 android:hint="School Name"
                 android:inputType="text"
+                android:maxLines="1"
                 android:maxLength="50"
                 android:padding="10dp"
                 android:textColorHint="@color/white"
@@ -69,6 +70,7 @@
                 android:maxLines="3"
                 android:maxLength="100"
                 android:scrollbars="vertical"
+
                 android:layout_marginTop="15dp"
                 android:background="@drawable/editbg"
                 android:hint="School Address"
@@ -88,6 +90,8 @@
                 android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:maxLength="50"
+                android:maxLines="1"
+
                 android:padding="10dp"
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
