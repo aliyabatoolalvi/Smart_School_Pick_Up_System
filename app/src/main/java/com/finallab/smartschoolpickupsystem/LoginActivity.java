@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText, passwordEditText;
-    private TextView registersign;
+    private TextView registersign, forgotpassword;
     private Button loginButton;
     private FirebaseAuth mAuth;
 
@@ -37,6 +37,8 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.next);
         registersign = findViewById(R.id.registersign);
+        forgotpassword = findViewById(R.id.forgot);
+
 
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
@@ -67,6 +69,24 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, SignUp.class);
             startActivity(intent);
             finish();
+        });
+
+        forgotpassword.setOnClickListener(view -> {
+            String email = emailEditText.getText().toString().trim();
+
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Enter your email first!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(this, "Reset email sent. Check your inbox!", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
         });
     }
 }

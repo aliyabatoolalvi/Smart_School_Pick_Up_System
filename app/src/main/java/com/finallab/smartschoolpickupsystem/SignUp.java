@@ -78,6 +78,18 @@ public class SignUp extends AppCompatActivity {
                                         userData.put("schoolAddress", schoolAddress);
 
 
+//                                        db.collection("users").document(userId)
+//                                                .set(userData)
+//                                                .addOnCompleteListener(task1 -> {
+//                                                    if (task1.isSuccessful()) {
+//                                                        Toast.makeText(SignUp.this, "Sign-up successful", Toast.LENGTH_SHORT).show();
+//                                                        Intent intent = new Intent(SignUp.this, LoginActivity.class);
+//                                                        startActivity(intent);
+//                                                        finish();
+//                                                    } else {
+//                                                        Toast.makeText(SignUp.this, "Error saving user data: " + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
+//                                                    }
+//                                                });
                                         db.collection("users").document(userId)
                                                 .set(userData)
                                                 .addOnCompleteListener(task1 -> {
@@ -87,9 +99,15 @@ public class SignUp extends AppCompatActivity {
                                                         startActivity(intent);
                                                         finish();
                                                     } else {
-                                                        Toast.makeText(SignUp.this, "Error saving user data: " + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                        Exception e = task1.getException();
+                                                        if (e != null) {
+                                                            Toast.makeText(SignUp.this, "Firestore Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                        } else {
+                                                            Toast.makeText(SignUp.this, "Unknown Firestore error", Toast.LENGTH_LONG).show();
+                                                        }
                                                     }
                                                 });
+
                                     }
                                 } else {
                                     Toast.makeText(SignUp.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
