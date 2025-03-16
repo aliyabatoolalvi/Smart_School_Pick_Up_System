@@ -65,14 +65,29 @@
             android:textSize="36sp"
              />
 
+<!--        <ImageButton-->
+<!--            android:id="@+id/advance"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="70dp"-->
+<!--            android:scaleType="fitCenter"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:layout_marginHorizontal="150dp"-->
+<!--            android:layout_marginTop="750dp"-->
+<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--            android:contentDescription="Click on it"-->
+<!--            app:srcCompat="@drawable/advance" />-->
         <ImageButton
             android:id="@+id/advance"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
             android:layout_centerInParent="true"
             android:layout_alignParentBottom="true"
             android:layout_marginHorizontal="150dp"
-            android:layout_marginTop="750dp"
+            android:layout_marginTop="700dp"
+            android:layout_marginBottom="15dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Click on it"
             app:srcCompat="@drawable/advance" />

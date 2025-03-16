@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.finallab.smartschoolpickupsystem.Activities.AddStudentActivity;
 import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +25,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private ViewPager2 viewPager;
-    private Button listStudentsButton, addStudentButton;
+    private Button listStudentsButton, addStudentButton, showUserID;
     private TextView navigationText;
 
     public HomeFragment() {
@@ -44,6 +47,7 @@ public class HomeFragment extends Fragment {
         listStudentsButton = view.findViewById(R.id.listStudentsButton);
         addStudentButton = view.findViewById(R.id.addStudentButton);
         navigationText = view.findViewById(R.id.navigationText);
+        showUserID = view.findViewById(R.id.showuid);
 
         navigationText.setText("Welcome! Use the buttons below to manage students or enjoy the carousel.");
 
@@ -58,9 +62,19 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(getActivity(), AddStudentActivity.class);
             startActivity(intent);
         });
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        final String userId = currentUser != null ? currentUser.getUid() : null; // Effectively final
 
+        // Handle showUserID click
+        showUserID.setOnClickListener(v -> {
+            if (userId != null) {
+                Toast.makeText(requireContext(), userId + " is the user ID of the current school", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "No user is logged in", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
-
     private void setupCarousel() {
         List<Integer> images = new ArrayList<>();
         images.add(R.drawable.rushhourschool); // Replace with your actual drawable resource IDs

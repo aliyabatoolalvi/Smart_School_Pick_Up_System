@@ -14,6 +14,7 @@ import com.finallab.smartschoolpickupsystem.Activities.GuardianDetails
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
 import com.finallab.smartschoolpickupsystem.databinding.GuardianItemBinding
 import com.finallab.smartschoolpickupsystem.databinding.StudentItemBinding
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -48,24 +49,55 @@ class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: Corou
             holder.binding.classstu.text = "Class: " + student.studentClass
             holder.binding.sectionstu.text = "Section: " + student.section
 
+//            holder.binding.delS.setOnClickListener {
+//                AlertDialog.Builder(holder.itemView.context)
+//                    .setTitle("Delete Confirmation")
+//                    .setMessage("Are you sure?")
+//                    .setPositiveButton("Yes") { _, _ ->
+//                        // Use lifecycleScope for database and UI updates
+//                        lifecycleScope.launch {
+//
+//                            AppDatabase.getDatabase(holder.itemView.context).studentDao().delete(student)
+//                            items.removeAt(holder.adapterPosition)
+//                            notifyItemRemoved(holder.adapterPosition)
+//                            Toast.makeText(holder.itemView.context, "Record deleted", Toast.LENGTH_SHORT)
+//                                .show()
+//                        }
+//                    }
+//                    .setNegativeButton("Cancel", null)
+//                    .show()
+//            }
             holder.binding.delS.setOnClickListener {
                 AlertDialog.Builder(holder.itemView.context)
                     .setTitle("Delete Confirmation")
-                    .setMessage("Pakka delete kerdain?? You sure??")
-                    .setPositiveButton("Yesss") { _, _ ->
-                        // Use lifecycleScope for database and UI updates
+                    .setMessage("Are you sure?")
+                    .setPositiveButton("Yes") { _, _ ->
                         lifecycleScope.launch {
-
+                            // Delete from Room
                             AppDatabase.getDatabase(holder.itemView.context).studentDao().delete(student)
+
+                            // Delete from Firestore
+                            val firestore = FirebaseFirestore.getInstance()
+                            firestore.collection("students").document(student.id.toString())
+                                .delete()
+                                .addOnSuccessListener {
+                                    Toast.makeText(holder.itemView.context, "Deleted from Firestore", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(holder.itemView.context, "Firestore deletion failed", Toast.LENGTH_SHORT).show()
+                                }
+
+                            // Update UI
                             items.removeAt(holder.adapterPosition)
                             notifyItemRemoved(holder.adapterPosition)
-                            Toast.makeText(holder.itemView.context, "Record deleted", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(holder.itemView.context, "Record deleted", Toast.LENGTH_SHORT).show()
                         }
                     }
-                    .setNegativeButton("Rehne do", null)
+                    .setNegativeButton("Cancel", null)
                     .show()
             }
+
+
 
 
 
@@ -81,9 +113,40 @@ class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: Corou
         }
 
         if (holder is GuardianViewHolder) {
-            val guardian = items.get(position) as Guardian
+            val guardian = items[position] as Guardian
             holder.binding.namegu.text = guardian.Gname
             holder.binding.CNICgu.text = "CNIC: " + guardian.CNIC
+
+            // Guardian delete logic
+            holder.binding.delG.setOnClickListener {
+                AlertDialog.Builder(holder.itemView.context)
+                    .setTitle("Delete Confirmation")
+                    .setMessage("Are you sure?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        lifecycleScope.launch {
+                            // Delete from Room
+                            AppDatabase.getDatabase(holder.itemView.context).guardianDao().delete(guardian)
+
+                            // Delete from Firestore
+                            val firestore = FirebaseFirestore.getInstance()
+                            firestore.collection("guardians").document(guardian.id.toString())
+                                .delete()
+                                .addOnSuccessListener {
+                                    Toast.makeText(holder.itemView.context, "Guardian deleted from Firestore", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(holder.itemView.context, "Firestore deletion failed", Toast.LENGTH_SHORT).show()
+                                }
+
+                            // Update UI
+                            items.removeAt(holder.adapterPosition)
+                            notifyItemRemoved(holder.adapterPosition)
+                            Toast.makeText(holder.itemView.context, "Record deleted", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
 
             holder.itemView.setOnClickListener {
                 holder.itemView.context.startActivity(
@@ -94,6 +157,7 @@ class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: Corou
                 )
             }
         }
+
     }
 }
 

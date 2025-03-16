@@ -3,9 +3,11 @@ package com.finallab.smartschoolpickupsystem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ public class SignUp extends AppCompatActivity {
     private Button signUpButton;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private ProgressBar progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class SignUp extends AppCompatActivity {
         schoolAddressEditText = findViewById(R.id.schoolAddress);
         signUpButton = findViewById(R.id.Signup);
         loginLink = findViewById(R.id.loginLink);
+        progress = findViewById(R.id.progressSign);
 
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,15 +58,23 @@ public class SignUp extends AppCompatActivity {
                 String schoolName = schoolNameEditText.getText().toString().trim();
                 String schoolAddress = schoolAddressEditText.getText().toString().trim();
 
+                if (!Utilities.isNetworkConnected(SignUp.this)) {
+                    Utilities.showNotConnectedSnack(findViewById(android.R.id.content), SignUp.this);
+                    return;
+                }
+
                 if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                    Toast.makeText(SignUp.this, "Enter email and password", Toast.LENGTH_SHORT).show();
+                    Utilities.showErrorSnack(findViewById(android.R.id.content), SignUp.this, "Enter email or password");
                     return;
                 }
 
                 if (TextUtils.isEmpty(schoolName) || TextUtils.isEmpty(schoolAddress)) {
-                    Toast.makeText(SignUp.this, "Enter school name and address", Toast.LENGTH_SHORT).show();
+                    Utilities.showErrorSnack(findViewById(android.R.id.content), SignUp.this, "Enter school name or address");
                     return;
                 }
+
+                progress.setVisibility(View.VISIBLE);
+                signUpButton.setEnabled(false);
 
                 mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(SignUp.this, new OnCompleteListener<AuthResult>() {
@@ -77,22 +89,12 @@ public class SignUp extends AppCompatActivity {
                                         userData.put("schoolName", schoolName);
                                         userData.put("schoolAddress", schoolAddress);
 
-
-//                                        db.collection("users").document(userId)
-//                                                .set(userData)
-//                                                .addOnCompleteListener(task1 -> {
-//                                                    if (task1.isSuccessful()) {
-//                                                        Toast.makeText(SignUp.this, "Sign-up successful", Toast.LENGTH_SHORT).show();
-//                                                        Intent intent = new Intent(SignUp.this, LoginActivity.class);
-//                                                        startActivity(intent);
-//                                                        finish();
-//                                                    } else {
-//                                                        Toast.makeText(SignUp.this, "Error saving user data: " + task1.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                                                    }
-//                                                });
                                         db.collection("users").document(userId)
                                                 .set(userData)
                                                 .addOnCompleteListener(task1 -> {
+                                                    progress.setVisibility(View.GONE);
+                                                    signUpButton.setEnabled(true);
+
                                                     if (task1.isSuccessful()) {
                                                         Toast.makeText(SignUp.this, "Sign-up successful", Toast.LENGTH_SHORT).show();
                                                         Intent intent = new Intent(SignUp.this, LoginActivity.class);
@@ -107,10 +109,22 @@ public class SignUp extends AppCompatActivity {
                                                         }
                                                     }
                                                 });
-
                                     }
                                 } else {
-                                    Toast.makeText(SignUp.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    progress.setVisibility(View.GONE);
+                                    signUpButton.setEnabled(true);
+
+                                    Exception e = task.getException();
+                                    if (e != null) {
+                                        String errorMessage = e.getMessage();
+                                        if (errorMessage != null && errorMessage.contains("email address is already in use")) {
+                                            Toast.makeText(SignUp.this, "This email is already registered. Please log in.", Toast.LENGTH_LONG).show();
+                                        } else if (errorMessage != null && errorMessage.contains("password should be at least")) {
+                                            Toast.makeText(SignUp.this, "Weak password! Choose a stronger password.", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(SignUp.this, "Authentication failed: " + errorMessage, Toast.LENGTH_LONG).show();
+                                        }
+                                    }
                                 }
                             }
                         });
@@ -118,7 +132,6 @@ public class SignUp extends AppCompatActivity {
         });
 
         loginLink.setOnClickListener(v -> {
-            // Navigate to LoginActivity
             Intent intent = new Intent(SignUp.this, LoginActivity.class);
             startActivity(intent);
             finish();
