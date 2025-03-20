@@ -14,10 +14,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.finallab.smartschoolpickupsystem.Recycler.OnStudentDeletedListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements OnStudentDeletedListener {
+
+    @Override
+    public void onStudentDeleted() {
+        fetchStudentAndGuardianCounts();  // Refresh count after deletion
+    }
 
     private TextView textViewName, textViewEmail, textViewAddress, studentcount, guardiancount;
     private FirebaseAuth mAuth;
@@ -89,33 +95,36 @@ public class ProfileFragment extends Fragment {
                 });
     }
     private void fetchStudentAndGuardianCounts() {
-        // Retrieve student count from Firestore
+        if (mAuth.getCurrentUser() == null) {
+            showToast("User not authenticated");
+            return;
+        }
+
+        String userId = mAuth.getCurrentUser().getUid();
+
         db.collection("students")
+                .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     int studentCount = querySnapshot.size();
                     studentcount.setText(String.valueOf(studentCount));
-                    Log.d("ProfileFragment", "Student count: " + studentCount);
-
                 })
                 .addOnFailureListener(e -> {
                     showToast("Error fetching student count: " + e.getMessage());
                 });
 
-        // Retrieve guardian count from Firestore
         db.collection("guardians")
+                .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     int guardianCount = querySnapshot.size();
                     guardiancount.setText(String.valueOf(guardianCount));
-                    Log.d("ProfileFragment", "Guardian count: " + guardianCount);
-
                 })
                 .addOnFailureListener(e -> {
                     showToast("Error fetching guardian count: " + e.getMessage());
                 });
-
     }
+
 
     private void showToast(String message) {
         if (getContext() != null) {

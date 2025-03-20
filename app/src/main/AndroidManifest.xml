@@ -37,7 +37,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-
+        <activity
+            android:name=".Activities.EditStudentActivity"
+            android:exported="false" />
         <activity
             android:name=".MapsActivity"
             android:exported="false"

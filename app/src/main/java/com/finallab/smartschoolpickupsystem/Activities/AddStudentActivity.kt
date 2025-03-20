@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -30,14 +31,21 @@ class AddStudentActivity : AppCompatActivity() {
         setContentView(binding.root)
         progressBar = binding.progressBar // Initialize ProgressBar
 
+
+        FirebaseFirestore.setLoggingEnabled(true)
+
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        Log.d("FirestoreDebug", "Current User UID: $userId")
+
+
         val progressDialog= ProgressDialog(this)
         progressDialog.setMessage("Please wait!")
         progressDialog.setCancelable(false)
         binding.regS.setOnClickListener {
-            if (binding.Sname.editText?.text.toString().isEmpty() ||
-                binding.reg.editText?.text.toString().isEmpty() ||
-                binding.studentClass.editText?.text.toString().isEmpty() ||
-                binding.section.editText?.text.toString().isEmpty()
+            if (binding.namestudent.editText?.text.toString().isEmpty() ||
+                binding.rollnostu.editText?.text.toString().isEmpty() ||
+                binding.stuclass.editText?.text.toString().isEmpty() ||
+                binding.secstu.editText?.text.toString().isEmpty()
             ) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             } else {
@@ -46,12 +54,16 @@ class AddStudentActivity : AppCompatActivity() {
                     showNotConnectedSnack()
                     return@setOnClickListener
                 }
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
                 val student = Student(
-                    Sname = binding.Sname.editText?.text.toString(),
-                    reg = binding.reg.editText?.text.toString(),
-                    studentClass = binding.studentClass.editText?.text.toString(),
-                    section = binding.section.editText?.text.toString(),
-                    studentDocId = "" // Initially set as empty
+                    Sname = binding.namestudent.editText?.text.toString(),
+                    reg = binding.rollnostu.editText?.text.toString(),
+                    studentClass = binding.stuclass.editText?.text.toString(),
+                    section = binding.secstu.editText?.text.toString(),
+                    studentDocId = "" , // Initially set as empty,
+                    userId = userId
+
                 )
                 progressBar.visibility = View.VISIBLE // Show loading
                 // Save to Firestore first
@@ -145,20 +157,20 @@ class AddStudentActivity : AppCompatActivity() {
         firestore.collection("students")
             .add(studentMap)
             .addOnSuccessListener { documentReference ->
-                val studentDocumentID = documentReference.id  // Get the auto-generated document ID
+                val studentDocumentID = documentReference.id // Firestore document ID
 
-                // Update Firestore document with its own ID
+                // Update Firestore with document ID
                 documentReference.update("studentDocId", studentDocumentID)
 
                 progressBar.visibility = View.GONE
                 Toast.makeText(this, "Student Registered in Firestore", Toast.LENGTH_SHORT).show()
 
-                // Also store in Room with correct studentDocId
+                // Save student in Room
                 student.studentDocId = studentDocumentID
+                student.userId = userId // Assign user ID
                 updateStudentInLocalDatabase(student)
 
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this, MainActivity::class.java))
                 finish()
             }
             .addOnFailureListener { e ->
@@ -167,8 +179,9 @@ class AddStudentActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateStudentInLocalDatabase(student: Student) {
 
-        AppDatabase.getDatabase(this).studentDao().insert(student) // You can use update() if the student already exists
+    private fun updateStudentInLocalDatabase(student: Student) {
+        AppDatabase.getDatabase(this).studentDao().insert(student)
     }
+
 }

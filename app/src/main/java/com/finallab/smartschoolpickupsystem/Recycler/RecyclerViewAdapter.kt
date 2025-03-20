@@ -1,11 +1,13 @@
 package com.finallab.smartschoolpickupsystem.Recycler
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.finallab.smartschoolpickupsystem.Activities.EditStudentActivity
 
 import com.finallab.smartschoolpickupsystem.Activities.StudentDetails
 import com.finallab.smartschoolpickupsystem.DataModels.Guardian
@@ -18,7 +20,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: CoroutineScope) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+interface OnStudentDeletedListener {
+    fun onStudentDeleted()
+}
+
+class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: CoroutineScope,     private val listener: OnStudentDeletedListener? // Add listener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewType == 0) {
             val binding =
@@ -67,25 +74,38 @@ class RecyclerViewAdapter(val items: MutableList<Any>, val lifecycleScope: Corou
 //                    .setNegativeButton("Cancel", null)
 //                    .show()
 //            }
+
+            holder.binding.editS.setOnClickListener {
+                val intent = Intent(holder.itemView.context, EditStudentActivity::class.java)
+                intent.putExtra("id", student.id)
+                intent.putExtra("studentDocumentID", student.studentDocId)
+                holder.itemView.context.startActivity(intent)
+            }
+
             holder.binding.delS.setOnClickListener {
                 AlertDialog.Builder(holder.itemView.context)
                     .setTitle("Delete Confirmation")
                     .setMessage("Are you sure?")
                     .setPositiveButton("Yes") { _, _ ->
                         lifecycleScope.launch {
-                            // Delete from Room
+                            // Delete
                             AppDatabase.getDatabase(holder.itemView.context).studentDao().delete(student)
 
-                            // Delete from Firestore
                             val firestore = FirebaseFirestore.getInstance()
-                            firestore.collection("students").document(student.id.toString())
-                                .delete()
-                                .addOnSuccessListener {
-                                    Toast.makeText(holder.itemView.context, "Deleted from Firestore", Toast.LENGTH_SHORT).show()
-                                }
-                                .addOnFailureListener {
-                                    Toast.makeText(holder.itemView.context, "Firestore deletion failed", Toast.LENGTH_SHORT).show()
-                                }
+                            val studentDocId = student.studentDocId // Use Firestore document ID
+
+                            if (studentDocId.isNotEmpty()) {
+                                firestore.collection("students").document(studentDocId)
+                                    .delete()
+                                    .addOnSuccessListener {
+                                        Toast.makeText(holder.itemView.context, "Deleted from Firestore", Toast.LENGTH_SHORT).show()
+                                        listener?.onStudentDeleted() // Notify ProfileFragment
+
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(holder.itemView.context, "Firestore deletion failed", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
 
                             // Update UI
                             items.removeAt(holder.adapterPosition)

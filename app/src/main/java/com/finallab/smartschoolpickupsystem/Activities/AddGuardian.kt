@@ -12,6 +12,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.util.Base64
+import com.google.firebase.auth.FirebaseAuth
 import java.io.ByteArrayOutputStream
 import java.util.*
 
@@ -103,6 +104,12 @@ class AddGuardian : AppCompatActivity() {
     }
 
     private fun saveGuardianToFirestore(guardian: Guardian) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val guardianMap = hashMapOf(
             "studentID" to guardian.studentID,
             "studentDocumentID" to guardian.studentDocumentID,
@@ -111,7 +118,8 @@ class AddGuardian : AppCompatActivity() {
             "CNIC" to guardian.CNIC,
             "Email" to guardian.Email,
             "QRcodeData" to guardian.QRcodeData,
-            "QRcodeBase64" to guardian.QRcodeBase64
+            "QRcodeBase64" to guardian.QRcodeBase64,
+            "userId" to userId  // Add userId field
         )
 
         firestore.collection("guardians")
@@ -124,6 +132,7 @@ class AddGuardian : AppCompatActivity() {
                 Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     private fun saveGuardianToLocalDatabase(guardian: Guardian) {
         lifecycleScope.launch(Dispatchers.IO) {

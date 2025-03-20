@@ -43,7 +43,7 @@ class StudentDetails : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        val adapter= RecyclerViewAdapter(AppDatabase.getDatabase(this).guardianDao().getAllguardians(student.id).toMutableList(), lifecycleScope)
+        val adapter= RecyclerViewAdapter(AppDatabase.getDatabase(this).guardianDao().getAllguardians(student.id).toMutableList(), lifecycleScope,null)
         binding.recyclerView.adapter=adapter
         binding.recyclerView.layoutManager= LinearLayoutManager(this)
     }
