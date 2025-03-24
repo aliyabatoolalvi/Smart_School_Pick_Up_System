@@ -58,7 +58,8 @@ dependencies {
     implementation("com.google.firebase:firebase-storage:21.0.1")
     implementation("com.google.firebase:firebase-firestore:25.1.1")
     implementation("com.google.android.gms:play-services-base:18.2.0")
-
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("androidx.room:room-ktx:2.6.1")
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")

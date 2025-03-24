@@ -1,5 +1,6 @@
 package com.finallab.smartschoolpickupsystem;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,16 +15,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.finallab.smartschoolpickupsystem.Recycler.OnStudentDeletedListener;
+import com.finallab.smartschoolpickupsystem.Activities.StudentDetails;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileFragment extends Fragment implements OnStudentDeletedListener {
 
-    @Override
-    public void onStudentDeleted() {
-        fetchStudentAndGuardianCounts();  // Refresh count after deletion
-    }
 
     private TextView textViewName, textViewEmail, textViewAddress, studentcount, guardiancount;
     private FirebaseAuth mAuth;
@@ -131,4 +128,18 @@ public class ProfileFragment extends Fragment implements OnStudentDeletedListene
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public void onDataUpdated() {
+        fetchStudentAndGuardianCounts();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof StudentDetails) {
+            ((StudentDetails) context).setOnStudentDeletedListener(this);
+        }
+    }
+
 }

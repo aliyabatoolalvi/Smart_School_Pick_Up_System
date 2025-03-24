@@ -6,58 +6,74 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.finallab.smartschoolpickupsystem.Activities.AddStudentActivity
-import com.finallab.smartschoolpickupsystem.Recycler.OnStudentDeletedListener
+import com.finallab.smartschoolpickupsystem.OnStudentDeletedListener
 import com.finallab.smartschoolpickupsystem.Recycler.RecyclerViewAdapter
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
 import com.finallab.smartschoolpickupsystem.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity() , OnStudentDeletedListener{
-    lateinit var binding: ActivityMainBinding
+class MainActivity : AppCompatActivity(), OnStudentDeletedListener {
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var adapter: RecyclerViewAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding=ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set up the RecyclerView
+        setupRecyclerView()
 
-
+        // Navigate to AddStudentActivity
         binding.addS.setOnClickListener {
-
             startActivity(Intent(this, AddStudentActivity::class.java))
         }
-        binding.backButton.setOnClickListener{
-            super.onBackPressed()
+
+        // Handle the back button
+        binding.backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed() // Updated for modern APIs
         }
-
-
     }
-
-//    override fun onResume() {
-//        super.onResume()
-//        val adapter= RecyclerViewAdapter(AppDatabase.getDatabase(this).studentDao().getAllStudents().toMutableList(), lifecycleScope )
-//        binding.recyclerview.adapter=adapter
-//        binding.recyclerview.layoutManager= LinearLayoutManager(this)
-//    }
 
     override fun onResume() {
         super.onResume()
+        loadStudentData()
+    }
 
+    private fun setupRecyclerView() {
+        adapter = RecyclerViewAdapter(mutableListOf(), lifecycleScope, this)
+        binding.recyclerview.layoutManager = LinearLayoutManager(this)
+        binding.recyclerview.adapter = adapter
+    }
+
+    private fun loadStudentData() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
-            val students = AppDatabase.getDatabase(this).studentDao().getStudentsByUserId(userId).toMutableList()
-            val studentList: MutableList<Any> = students.toMutableList() // Cast to MutableList<Any>
+            lifecycleScope.launch {
+                try {
+                    // Fetch student data in the background
+                    val students = withContext(Dispatchers.IO) {
+                        AppDatabase.getDatabase(this@MainActivity).studentDao().getStudentsByUserId(userId)
+                    }
 
-            val adapter = RecyclerViewAdapter(studentList, lifecycleScope, this)
+                    // Update the adapter with new data
+                    adapter.updateData(students.toMutableList())
 
-            binding.recyclerview.adapter = adapter
-            binding.recyclerview.layoutManager = LinearLayoutManager(this)
+                } catch (e: Exception) {
+                    Toast.makeText(this@MainActivity, "Error loading students: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         } else {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
         }
     }
-    override fun onStudentDeleted() {
-        onResume() // Reload student list when a student is deleted
-    }
 
+
+
+    override fun onDataUpdated() {
+        loadStudentData()
+    }
 }

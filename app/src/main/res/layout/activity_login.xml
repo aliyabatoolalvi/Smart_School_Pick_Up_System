@@ -18,6 +18,7 @@
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             app:srcCompat="@drawable/school1" />
+
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
@@ -25,11 +26,9 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_above="@id/form"
 
             android:layout_marginStart="40dp"
             android:layout_marginTop="140dp"
-            android:layout_marginBottom="20dp"
             android:text="Login to continue"
             android:textColor="@android:color/white"
             android:textSize="50dp"
@@ -39,13 +38,14 @@
             android:id="@+id/form"
             android:layout_width="600dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_centerVertical="true"
+            android:layout_below="@+id/title"
+            android:layout_alignParentBottom="false"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
 
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/form_background_light"
-
             android:orientation="vertical"
             android:padding="20dp">
 
@@ -56,14 +56,14 @@
                 android:layout_marginTop="27dp"
                 android:background="@drawable/editbg"
                 android:hint="Email"
-                android:maxLines="1"
-
+                android:textColor="@color/white"
                 android:inputType="textEmailAddress"
+
+                android:maxLines="1"
                 android:padding="10dp"
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
-
 
 
             <EditText
@@ -73,9 +73,10 @@
                 android:layout_marginTop="34dp"
                 android:background="@drawable/editbg"
                 android:hint="Password"
-                android:maxLines="1"
                 android:inputType="textPassword"
+                android:maxLines="1"
                 android:padding="10dp"
+                android:textColor="@color/white"
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -83,36 +84,35 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="18dp">
+                android:layout_marginTop="18dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/forgot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="2"
                     android:clickable="true"
                     android:focusable="true"
+                    android:gravity="start"
                     android:text="Forgot Password?"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:gravity="start"
-                    android:layout_weight="2"
-                    />
+                    android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/registersign"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
+                    android:background="@drawable/button_blue"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="@drawable/button_blue"
-                    android:text="New here? Register"
                     android:gravity="end"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:layout_gravity="center"
+                    android:text="New here? Register"
                     android:textAlignment="center"
-                    />
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 

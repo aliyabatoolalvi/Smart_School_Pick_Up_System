@@ -55,7 +55,7 @@
                 android:layout_marginVertical="40dp"
                 android:layout_marginStart="22dp"
                 android:background="?android:attr/selectableItemBackground"
-
+                app:layout_constraintEnd_toStartOf="@id/Stitle"
                 android:contentDescription="Back Button"
                 android:rotation="180"
                 android:src="@drawable/baseline_keyboard_arrow_right_24"
@@ -138,29 +138,52 @@
                             android:layout_height="wrap_content"
                             android:maxLines="1"
                             android:background="@drawable/editbg"
-                            android:inputType="text"/>
+                            android:inputType="textCapWords"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/stuclass"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:hint="Class"
-                        android:background="@color/white_bg"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/namestudent">
+<!--                    <com.google.android.material.textfield.TextInputLayout-->
+<!--                        android:id="@+id/stuclass"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginStart="16dp"-->
+<!--                        android:layout_marginTop="16dp"-->
+<!--                        android:layout_marginEnd="16dp"-->
+<!--                        android:hint="Class"-->
+<!--                        android:background="@color/white_bg"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toBottomOf="@+id/namestudent">-->
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
+<!--                        <com.google.android.material.textfield.TextInputEditText-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:maxLines="1"-->
+<!--                            android:background="@drawable/editbg"-->
+<!--                            android:inputType="text"/>-->
+<!--                    </com.google.android.material.textfield.TextInputLayout>-->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/classDropdownLayout"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:maxLines="1"
-                            android:background="@drawable/editbg"
-                            android:inputType="text"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_margin="16dp"
+                            android:hint="Select Class"
+                            android:paddingHorizontal="15dp"
+
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:background="@color/white"
+                            app:endIconMode="dropdown_menu"
+                            app:layout_constraintTop_toBottomOf="@+id/namestudent">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/stuClass"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:inputType="none"
+                                android:focusable="false"
+                                android:background="@drawable/editbg"
+                                />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/secstu"
@@ -173,14 +196,15 @@
                         android:background="@color/white_bg"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/stuclass">
+                        app:layout_constraintTop_toBottomOf="@+id/classDropdownLayout">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:maxLines="1"
+
                             android:background="@drawable/editbg"
-                            android:inputType="text"/>
+                            android:inputType="textCapWords"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -190,13 +214,13 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="16dp"
                         android:hint="Roll No"
                         android:background="@color/white_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/secstu">
+                        app:layout_constraintTop_toBottomOf="@+id/secstu"
+
+                        >
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
@@ -205,6 +229,43 @@
                             android:background="@drawable/editbg"
                             android:inputType="text"/>
                     </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/parentDropdownLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:background="@color/white"
+                        android:hint="Select Guardian"
+                        app:endIconMode="dropdown_menu"
+                        app:hintEnabled="true"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/rollnostu">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/gdropdown"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:background="@drawable/editbg"
+                            android:inputType="none"
+                            android:focusable="false"
+                             />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/addGuardianButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Add New Guardian"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+
+                        app:layout_constraintTop_toBottomOf="@+id/parentDropdownLayout"
+                        app:layout_constraintEnd_toEndOf="@+id/parentDropdownLayout" />
+
+
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>

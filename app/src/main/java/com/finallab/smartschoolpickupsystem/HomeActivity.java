@@ -3,6 +3,8 @@ package com.finallab.smartschoolpickupsystem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,10 +16,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseFirestore db= FirebaseFirestore.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +35,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawer);
         NavigationView navigationView = findViewById(R.id.navview);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView schoonaTextView = headerView.findViewById(R.id.schoolname);
+        schoonaTextView.setText("New School Name");
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this,
@@ -48,6 +57,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .commit();
             navigationView.setCheckedItem(R.id.home);
         }
+
+        fetchSchoolName();
     }
 
     @Override
@@ -92,6 +103,43 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+    }
+    private void fetchSchoolName() {
+        if (mAuth.getCurrentUser() == null) {
+            showToast("User not logged in");
+            return;
+        }
+
+        String userId = mAuth.getCurrentUser().getUid();
+
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String schoolName = documentSnapshot.getString("schoolName");
+
+                        NavigationView navigationView = findViewById(R.id.navview);
+
+                        View headerView = navigationView.getHeaderView(0);
+                        TextView schoonaTextView = headerView.findViewById(R.id.schoolname);
+                        schoonaTextView.setText(schoolName);
+
+                    } else {
+                        NavigationView navigationView = findViewById(R.id.navview);
+
+                        View headerView = navigationView.getHeaderView(0);
+                        TextView schoonaTextView = headerView.findViewById(R.id.schoolname);
+                        schoonaTextView.setText("School Name");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    showToast("Error fetching data: " + e.getMessage());
+                });
+    }
+    private void showToast(String message) {
+        if (this != null) {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         }
     }
 }

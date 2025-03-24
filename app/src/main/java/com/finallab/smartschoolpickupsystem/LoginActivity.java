@@ -58,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
         registersign = findViewById(R.id.registersign);
         forgotpassword = findViewById(R.id.forgot);
 
-
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();

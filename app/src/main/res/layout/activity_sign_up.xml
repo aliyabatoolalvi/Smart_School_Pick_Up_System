@@ -53,7 +53,6 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- School Name EditText -->
             <EditText
                 android:id="@+id/schoolName"
                 android:layout_width="match_parent"
@@ -64,12 +63,12 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:maxLength="50"
+                android:textColor="@color/white"
                 android:padding="10dp"
                 android:textColorHint="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <!-- School Address EditText -->
             <EditText
                 android:id="@+id/schoolAddress"
                 android:layout_width="match_parent"
@@ -78,6 +77,7 @@
                 android:maxLines="3"
                 android:maxLength="100"
                 android:scrollbars="vertical"
+                android:textColor="@color/white"
 
                 android:layout_marginTop="15dp"
                 android:background="@drawable/editbg"
@@ -88,7 +88,6 @@
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <!-- Email EditText -->
             <EditText
                 android:id="@+id/email1"
                 android:layout_width="match_parent"
@@ -99,6 +98,7 @@
                 android:inputType="textEmailAddress"
                 android:maxLength="50"
                 android:maxLines="1"
+                android:textColor="@color/white"
 
                 android:padding="10dp"
                 android:textColorHint="@color/white"
@@ -113,6 +113,8 @@
                 android:layout_marginTop="15dp"
                 android:background="@drawable/editbg"
                 android:hint="Password"
+                android:textColor="@color/white"
+
                 android:inputType="textPassword"
                 android:maxLength="20"
                 android:padding="10dp"
