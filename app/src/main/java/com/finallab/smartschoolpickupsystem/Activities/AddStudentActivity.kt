@@ -1,21 +1,30 @@
 package com.finallab.smartschoolpickupsystem.Activities
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.finallab.smartschoolpickupsystem.DataModels.GuardianStudentCrossRef
+import com.finallab.smartschoolpickupsystem.Database.GuardianStudentDao
 import androidx.lifecycle.lifecycleScope
 import com.finallab.smartschoolpickupsystem.DataModels.Student
 import com.finallab.smartschoolpickupsystem.R
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
 import com.finallab.smartschoolpickupsystem.databinding.ActivityAddStudentBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +38,12 @@ class AddStudentActivity : AppCompatActivity() {
     private lateinit var parentDropdown: AutoCompleteTextView
     private lateinit var classDropdown: AutoCompleteTextView
 
-    private val guardianList = mutableListOf<String>()
-    private val selectedGuardians = mutableListOf<String>()
+    private val db = FirebaseFirestore.getInstance()
+    private val currentUser = FirebaseAuth.getInstance().currentUser
+
+    private var selectedGuardian: String? = null
+    private var selectedGuardianCNIC: String = ""
+    private var selectedGuardianId: String = ""
 
     private val classList = listOf(
         "Nursery", "KG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
@@ -53,133 +66,32 @@ class AddStudentActivity : AppCompatActivity() {
 
         binding.regS.setOnClickListener { registerStudent() }
         binding.backButton.setOnClickListener { onBackPressed() }
-
-    }
-
-    /** Fetch guardians from Firestore and populate dropdown */
-    private fun fetchAvailableGuardians() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-        userId?.let {
-            firestore.collection("guardians")
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener { documents ->
-                    guardianList.clear()
-                    guardianList.add("None")
-
-                    for (document in documents) {
-                        document.getString("Gname")?.let {
-                            guardianList.add(it)
-                        }
-                    }
-
-                    if (guardianList.isEmpty()) guardianList.add("No Guardians Found")
-
-                    setupGuardianDropdown()
-                }
-                .addOnFailureListener {
-                    showToast("Failed to fetch guardians.")
-                }
-        }
-    }
-
-    /** Set up the guardian dropdown with proper behavior */
-    /** Set up the guardian dropdown with proper behavior */
-    private fun setupGuardianDropdown() {
-        val guardianAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, guardianList)
-        parentDropdown.apply {
-            setAdapter(guardianAdapter)
-            setOnClickListener { showDropDown() }
-
-            // Handle selection from dropdown
-            setOnItemClickListener { _, _, position, _ ->
-                val selectedGuardian = guardianList[position]
-
-                // Show "Add Guardian" button if "No Guardians Found" or "None" is selected
-                binding.addGuardianButton.visibility = if (selectedGuardian == "No Guardians Found" || selectedGuardian == "None") {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
-
-                // Add valid guardian to the selected list
-                if (selectedGuardian !in selectedGuardians && selectedGuardian != "No Guardians Found" && selectedGuardian != "None") {
-                    selectedGuardians.add(selectedGuardian)
-                    setText(selectedGuardians.joinToString(", "), false)
-                }
-
-                // Clear hint on selection
-                binding.parentDropdownLayout.hint = ""
-            }
-
-            // Restore hint if no selection is made
-            setOnDismissListener {
-                if (text.isEmpty()) {
-                    binding.parentDropdownLayout.hint = "Select Guardian"
-                }
-            }
-        }
-
-        // Ensure the button is hidden by default
-        binding.addGuardianButton.visibility = View.GONE
-
-        // Navigate to AddGuardian Activity
         binding.addGuardianButton.setOnClickListener {
-            val intent = Intent(this@AddStudentActivity, AddGuardian::class.java)
-            startActivityForResult(intent, REQUEST_CODE_ADD_GUARDIAN)
+            startActivityForResult(Intent(this, AddGuardian::class.java), REQUEST_CODE_ADD_GUARDIAN)
         }
-
-        // Ensure dropdown updates when new data arrives
-        guardianAdapter.notifyDataSetChanged()
     }
 
-
-    /** Set up the class dropdown */
-    /** Set up the class dropdown */
     private fun setupClassDropdown() {
         val classAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, classList)
         classDropdown.apply {
             setAdapter(classAdapter)
             setOnClickListener { showDropDown() }
-
-            // Hide hint when an item is selected
             setOnItemClickListener { _, _, _, _ ->
                 binding.classDropdownLayout.hint = ""
             }
-
-            // Show hint again if no class is selected
             setOnDismissListener {
-                if (text.isEmpty()) {
-                    binding.classDropdownLayout.hint = "Select Class"
-                }
-            }
-        }
-
-        // Set initial hint
-        binding.classDropdownLayout.hint = "Select Class"
-    }
-
-    /** Handles result from AddGuardian Activity */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_ADD_GUARDIAN && resultCode == RESULT_OK) {
-            lifecycleScope.launch {
-                fetchAvailableGuardians()
-                setupGuardianDropdown() // Ensure refresh after returning
+                if (text.isEmpty()) binding.classDropdownLayout.hint = "Select Class"
             }
         }
     }
 
-
-    /** Validate inputs and register the student */
     private fun registerStudent() {
         val studentName = binding.namestudent.editText?.text.toString().trim()
         val rollNo = binding.rollnostu.editText?.text.toString().trim()
         val studentClass = classDropdown.text.toString().trim()
         val section = binding.secstu.editText?.text.toString().trim()
 
-        if (studentName.isEmpty() || rollNo.isEmpty() || studentClass.isEmpty() || section.isEmpty() || selectedGuardians.isEmpty()) {
+        if (studentName.isEmpty() || rollNo.isEmpty() || studentClass.isEmpty() || section.isEmpty()) {
             showToast("Please fill in all fields")
             return
         }
@@ -195,21 +107,19 @@ class AddStudentActivity : AppCompatActivity() {
             reg = rollNo,
             studentClass = studentClass,
             section = section,
-            firestoreId = "",
-            userId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+            userId = currentUser?.uid ?: "",
             studentDocId = "",
-            guardians = selectedGuardians
+            gCNIC = selectedGuardianCNIC
         )
 
         if (isNetworkConnected()) {
-            checkStudentExists(student)
+            saveStudentToFirestore(student)
         } else {
             saveStudentOffline(student)
             showToast("No internet connection. Student data saved locally.")
         }
     }
 
-    /** Save student to Firestore and update Room DB */
     private fun saveStudentToFirestore(student: Student) {
         binding.progressBar.visibility = View.VISIBLE
 
@@ -219,12 +129,22 @@ class AddStudentActivity : AppCompatActivity() {
                 documentReference.update("studentDocId", student.studentDocId)
 
                 lifecycleScope.launch(Dispatchers.IO) {
-                    AppDatabase.getDatabase(this@AddStudentActivity).studentDao().insertStudent(student)
-                    linkStudentWithGuardians(student.studentDocId, selectedGuardians)
+                    val db = AppDatabase.getDatabase(this@AddStudentActivity)
+                    val studentId = db.studentDao().insertStudent(student).toInt()
+                    student.studentID = studentId
+
+                    if (selectedGuardianCNIC.isNotEmpty()) {
+                        val guardian = db.guardianDao().getGuardianByCNIC(selectedGuardianCNIC)
+                        guardian?.let {
+                            val crossRef = GuardianStudentCrossRef(it.guardianID, studentId)
+                            db.guardianStudentDao().insertGuardianStudentCrossRef(crossRef)
+                            linkGuardianAndStudentInFirestore(selectedGuardianId, student.studentDocId)
+                        }
+                    }
 
                     withContext(Dispatchers.Main) {
                         binding.progressBar.visibility = View.GONE
-                        showToast("Student Registered!")
+                        showToast("Student Registered Successfully!")
                         clearInputFields()
                     }
                 }
@@ -235,140 +155,186 @@ class AddStudentActivity : AppCompatActivity() {
             }
     }
 
-    /** Link student with their guardians in Firestore */
-    private fun linkStudentWithGuardians(studentId: String, guardians: List<String>) {
-        lifecycleScope.launch {
-            val batch = firestore.batch()
-            val guardianReferences = mutableListOf<Map<String, String>>() // Store guardian details (ID + name)
+    private fun linkGuardianAndStudentInFirestore(guardianDocId: String, studentDocId: String) {
+        val guardianRef = firestore.collection("guardians").document(guardianDocId)
+        val studentRef = firestore.collection("students").document(studentDocId)
 
-            guardians.forEach { guardianName ->
-                firestore.collection("guardians")
-                    .whereEqualTo("Gname", guardianName)
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        for (document in documents) {
-                            val guardianId = document.id
+        firestore.runTransaction { transaction ->
+            // First, do all reads
+            val guardianSnapshot = transaction.get(guardianRef)
+            val studentSnapshot = transaction.get(studentRef)
 
-                            // Add student ID to guardian document
-                            batch.update(document.reference, "studentIds", FieldValue.arrayUnion(studentId))
+            // Then, do all writes
+            val currentStudents = guardianSnapshot.get("students") as? List<String> ?: emptyList()
+            transaction.update(guardianRef, "students", currentStudents + studentDocId)
 
-                            // Collect guardian's ID and name
-                            guardianReferences.add(mapOf("id" to guardianId, "name" to guardianName))
-                        }
+            val currentGuardians = studentSnapshot.get("guardians") as? List<String> ?: emptyList()
+            transaction.update(studentRef, "guardians", currentGuardians + guardianDocId)
 
-                        // Commit batch after processing all guardians
-                        batch.commit()
-
-                        // Update student with linked guardian IDs and names
-                        updateStudentWithGuardianReferences(studentId, guardianReferences)
-                    }
-                    .addOnFailureListener { e ->
-                        showToast("Error linking guardian: ${e.message}")
-                    }
-            }
+            // Return nothing (the transaction will complete successfully)
+            null
+        }.addOnSuccessListener {
+            Log.d("Firestore", "Successfully linked guardian and student")
+        }.addOnFailureListener { e ->
+            Log.e("Firestore", "Error linking guardian and student", e)
+            showToast("Error linking accounts. Please try again.")
         }
     }
-    private fun updateStudentWithGuardianReferences(studentId: String, guardianReferences: List<Map<String, String>>) {
-        firestore.collection("students")
-            .document(studentId)
-            .update("guardians", guardianReferences)
-            .addOnSuccessListener {
-                showToast("Student linked with guardians successfully!")
-            }
-            .addOnFailureListener { e ->
-                showToast("Error updating student with guardians: ${e.message}")
-            }
-    }
 
-
-    /** Save student data offline if no network */
     private fun saveStudentOffline(student: Student) {
         lifecycleScope.launch(Dispatchers.IO) {
-            AppDatabase.getDatabase(this@AddStudentActivity).studentDao().insertStudent(student)
-        }
-    }
-    private fun checkStudentExists(student: Student) {
-        firestore.collection("students")
-            .whereEqualTo("Sname", student.Sname)
-            .whereEqualTo("reg", student.reg)
-            .whereEqualTo("userId", student.userId)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (documents.isEmpty) {
-                    saveStudentToFirestore(student) // Save only if student doesn't exist
-                } else {
-                    showToast("Student already exists!")
-                    binding.progressBar.visibility = View.GONE
+            val db = AppDatabase.getDatabase(this@AddStudentActivity)
+            val studentId = db.studentDao().insertStudent(student).toInt()
+
+            if (selectedGuardianCNIC.isNotEmpty()) {
+                val guardian = db.guardianDao().getGuardianByCNIC(selectedGuardianCNIC)
+                guardian?.let {
+                    val crossRef = GuardianStudentCrossRef(it.guardianID, studentId)
+                    db.guardianStudentDao().insertGuardianStudentCrossRef(crossRef)
                 }
             }
-            .addOnFailureListener {
-                showToast("Error checking student: ${it.message}")
-                binding.progressBar.visibility = View.GONE
-            }
+        }
     }
 
+    private fun fetchAvailableGuardians() {
+        currentUser?.uid?.let { userId ->
+            db.collection("guardians")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    val guardians = querySnapshot.documents.filter { doc ->
+                        doc.getString("Gname") != null && doc.getString("CNIC") != null
+                    }
+                    updateGuardianDropdown(guardians)
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error loading guardians", Toast.LENGTH_SHORT).show()
+                    updateGuardianDropdown(emptyList())
+                }
+        }
+    }
 
-    /** Sync offline data when network is available */
-    /** Sync offline data only when the device gets online */
-//    private fun syncOfflineData() {
-//        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//
-//        // Check if the current network is available (compatible with API 23+)
-//        val isConnected = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-//            cm.activeNetwork?.let { network ->
-//                cm.getNetworkCapabilities(network)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-//            } ?: false
-//        } else {
-//            @Suppress("DEPRECATION")
-//            cm.activeNetworkInfo?.isConnected == true
-//        }
-//
-//        if (isConnected) {
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                val studentDao = AppDatabase.getDatabase(this@AddStudentActivity).studentDao()
-//                val offlineStudents = studentDao.getAllStudents()
-//
-//                if (offlineStudents.isNotEmpty()) {
-//                    offlineStudents.forEach { student ->
-//                        saveStudentToFirestore(student)
-//
-//                        // Safely delete after successful sync
-//                        withContext(Dispatchers.IO) {
-//                            studentDao.deleteStudent(student)
-//                        }
-//                    }
-//
-//                    // Show success message on the main thread
-//                    withContext(Dispatchers.Main) {
-//                        showToast("Offline data synced successfully!")
-//                    }
-//                }
-//            }
-//        } else {
-//            showToast("No internet connection. Data will sync when online.")
-//        }
-//    }
+    private fun updateGuardianDropdown(guardians: List<DocumentSnapshot>) {
+        val adapter = object : ArrayAdapter<DocumentSnapshot>(
+            this,
+            R.layout.item_guardian_layout,
+            guardians
+        ) {
+            override fun getCount(): Int = guardians.size + 1 // +1 for "None" option
 
+            override fun getItem(position: Int): DocumentSnapshot? {
+                return if (position < guardians.size) guardians[position] else null
+            }
 
-    /** Check if the device is connected to the internet */
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                if (position == guardians.size) {
+                    return createMessageView("None", parent)
+                }
+                return createGuardianView(guardians[position], convertView, parent)
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                return getView(position, convertView, parent)
+            }
+
+            private fun createMessageView(text: String, parent: ViewGroup): View {
+                val view = LayoutInflater.from(context)
+                    .inflate(android.R.layout.simple_list_item_1, parent, false)
+                view.findViewById<TextView>(android.R.id.text1).apply {
+                    this.text = text
+                    setTextColor(Color.GRAY)
+                }
+                return view
+            }
+
+            private fun createGuardianView(
+                guardian: DocumentSnapshot,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
+                val view = convertView ?: LayoutInflater.from(context)
+                    .inflate(R.layout.item_guardian_layout, parent, false)
+
+                // Add null checks for the TextViews
+                view.findViewById<TextView>(R.id.tvGuardianName)?.text =
+                    guardian.getString("Gname") ?: "Unknown"
+
+                view.findViewById<TextView>(R.id.tvGuardianCNIC)?.text =
+                    "CNIC: ${guardian.getString("CNIC") ?: "Not Available"}"
+
+                return view
+            }
+        }
+
+        parentDropdown.setAdapter(adapter)
+        parentDropdown.threshold = 1
+
+        parentDropdown.setOnItemClickListener { _, _, position, _ ->
+            if (position == guardians.size) {
+                // "None" selected
+                selectedGuardian = null
+                selectedGuardianCNIC = ""
+                selectedGuardianId = ""
+            } else {
+                val guardian = guardians[position]
+                selectedGuardian = guardian.getString("Gname")
+                selectedGuardianCNIC = guardian.getString("CNIC") ?: ""
+                selectedGuardianId = guardian.id
+            }
+        }
+
+        binding.addGuardianButton.visibility = if (guardians.isEmpty()) View.VISIBLE else View.GONE
+    }
+
+    fun onTestGuardiansClick(view: View) {
+        currentUser?.uid?.let { userId ->
+            FirebaseFirestore.getInstance().collection("guardians")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    val guardianList = snapshot.documents.joinToString("\n") { doc ->
+                        "Name: ${doc["Gname"]}, CNIC: ${doc["CNIC"]}, ID: ${doc.id}"
+                    }
+                    AlertDialog.Builder(this)
+                        .setTitle("Guardians in Database")
+                        .setMessage(if (guardianList.isEmpty()) "No guardians found" else guardianList)
+                        .setPositiveButton("OK", null)
+                        .show()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_ADD_GUARDIAN && resultCode == RESULT_OK) {
+            fetchAvailableGuardians()
+        }
+    }
+
     private fun isNetworkConnected(): Boolean {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return cm.getNetworkCapabilities(cm.activeNetwork)?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true ||
-                cm.getNetworkCapabilities(cm.activeNetwork)?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true
+        return cm.activeNetwork?.let { network ->
+            cm.getNetworkCapabilities(network)?.let { capabilities ->
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            } ?: false
+        } ?: false
     }
 
-    /** Helper function to show a toast message */
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    /** Clear input fields after successful registration */
     private fun clearInputFields() {
         binding.namestudent.editText?.setText("")
         binding.rollnostu.editText?.setText("")
         classDropdown.setText("")
         binding.secstu.editText?.setText("")
         parentDropdown.setText("")
-        selectedGuardians.clear()
+        selectedGuardian = null
+        selectedGuardianCNIC = ""
     }
 }

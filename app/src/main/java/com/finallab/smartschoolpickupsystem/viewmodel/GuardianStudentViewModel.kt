@@ -68,7 +68,23 @@ class GuardianStudentViewModel(private val repository: GuardianStudentRepository
             repository.syncStudentsFromFirestore()
         }
     }
+
+    fun insertOrUpdateGuardian(guardian: Guardian) {
+        viewModelScope.launch {
+            repository.insertOrUpdateGuardian(guardian)
+        }
+    }
+
+    fun insertOrUpdateStudent(student: Student) {
+        viewModelScope.launch {
+            repository.insertOrUpdateStudent(student)
+        }
+    }
+    suspend fun getGuardiansByUserId(userId: String): List<Guardian> {
+           return  repository.getGuardiansByUserId(userId)
+    }
 }
+
 
 // ✅ ViewModel Factory (for constructor injection)
 class GuardianStudentViewModelFactory(private val repository: GuardianStudentRepository) : ViewModelProvider.Factory {

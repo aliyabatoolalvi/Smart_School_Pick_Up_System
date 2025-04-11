@@ -30,7 +30,7 @@ class RecyclerViewAdapter(
     private val items: MutableList<Any>,
     private val lifecycleScope: CoroutineScope,
     private val listener: OnStudentDeletedListener?=null,
-    private val onDeleteClick: ((Guardian) -> Unit)? = null // ✅ Added onDeleteClick parameter
+    private val onDeleteClick: ((Guardian) -> Unit)? = null
 
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -88,6 +88,8 @@ class RecyclerViewAdapter(
         }
 
         holder.itemView.setOnClickListener {
+            Log.d("RecyclerViewAdapter", "Clicked student: ${student.studentID}")
+
             val intent = Intent(holder.itemView.context, StudentDetails::class.java).apply {
                 putExtra("id", student.studentID)
             }

@@ -8,23 +8,15 @@ import com.google.common.base.Converter
 
 @Entity
 data class Student (
-//    @PrimaryKey(autoGenerate = true)
-//    var id: Int = 0,  // Local database ID (Room)
-
-    @PrimaryKey@ColumnInfo(name = "studentID")
+    @PrimaryKey(autoGenerate = true)@ColumnInfo(name = "studentID")
     var studentID: Int = 0,
-
     var Sname: String,
     var reg: String,
     var studentClass: String,
     var section: String,
-    var firestoreId: String = "",
     var userId: String,
     var studentDocId: String = "",
-
-    @TypeConverters(Converter::class)
-    val guardians: List<String> = emptyList()
-
+    var gCNIC: String,
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
@@ -33,10 +25,9 @@ data class Student (
             "reg" to reg,
             "studentClass" to studentClass,
             "section" to section,
-            "firestoreId" to firestoreId,
             "userId" to userId,
             "studentDocId" to studentDocId,
-            "guardians" to guardians
+            "gCNIC" to gCNIC,
         )
     }
 }

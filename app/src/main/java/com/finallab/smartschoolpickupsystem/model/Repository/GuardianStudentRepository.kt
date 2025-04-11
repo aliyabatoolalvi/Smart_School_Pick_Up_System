@@ -15,25 +15,57 @@ import kotlinx.coroutines.withContext;
 class GuardianStudentRepository(private val db: AppDatabase) {
 
     private val firestore = FirebaseFirestore.getInstance();
+    suspend fun getStudentById(studentId: Int): Student? {
+        return db.studentDao().getStudentById(studentId)
+    }
 
     // ✅ Insert Guardian into Room and Firestore
+//    suspend fun insertGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
+//        val guardianId = db.guardianDao().insertGuardian(guardian);
+//
+//        val guardianMap = guardian.toMap();
+//
+//        firestore.collection("Guardians")
+//            .document(guardian.guardianID.toString())
+//            .set(guardianMap, SetOptions.merge())
+//            .addOnSuccessListener { Log.d("Firestore", "Guardian added successfully.") }
+//            .addOnFailureListener { Log.e("Firestore", "Error adding guardian", it) };
+//    }
+
+    // ✅ Insert Guardian into Room and Firestore (adds Guardian to Student's 'guardians' array)
     suspend fun insertGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
-        val guardianId = db.guardianDao().insertGuardian(guardian);
+        try {
+            // Insert Guardian into Room database
+            val guardianId = db.guardianDao().insertGuardian(guardian)
 
-        val guardianMap = guardian.toMap();
+            // Convert Guardian object to Map for Firestore
+            val guardianMap = guardian.toMap()
 
-        firestore.collection("Guardians")
-            .document(guardian.guardianID.toString())
-            .set(guardianMap, SetOptions.merge())
-            .addOnSuccessListener { Log.d("Firestore", "Guardian added successfully.") }
-            .addOnFailureListener { Log.e("Firestore", "Error adding guardian", it) };
+            // Store Guardian in Firestore 'Guardians' collection
+            firestore.collection("guardians")
+                .document(guardian.guardianID.toString())
+                .set(guardianMap, SetOptions.merge())
+                .addOnSuccessListener { Log.d("Firestore", "Guardian added successfully.") }
+                .addOnFailureListener { Log.e("Firestore", "Error adding guardian", it) }
+
+            // Add Guardian to the related Student's 'guardians' array
+            firestore.collection("students")
+                .document(guardian.studentDocumentID)
+                .update("guardians", FieldValue.arrayUnion(guardianMap))
+                .addOnSuccessListener { Log.d("Firestore", "Guardian linked to student.") }
+                .addOnFailureListener { Log.e("Firestore", "Error linking guardian to student", it) }
+
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error inserting guardian", e)
+        }
     }
+
 
     // ✅ Update Guardian in Room and Firestore
     suspend fun updateGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
         db.guardianDao().updateGuardian(guardian);
 
-        firestore.collection("Guardians")
+        firestore.collection("guardians")
             .document(guardian.guardianID.toString())
             .set(guardian.toMap(), SetOptions.merge())
             .addOnSuccessListener { Log.d("Firestore", "Guardian updated successfully.") }
@@ -43,7 +75,7 @@ class GuardianStudentRepository(private val db: AppDatabase) {
     suspend fun insertOrUpdateGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
         db.guardianDao().upsertGuardian(guardian) // Insert or update Guardian in Room
 
-        firestore.collection("Guardians")
+        firestore.collection("guardians")
             .document(guardian.guardianID.toString())
             .set(guardian.toMap(), SetOptions.merge()) // Merge data in Firestore
             .addOnSuccessListener { Log.d("Firestore", "Guardian synced successfully.") }
@@ -51,29 +83,39 @@ class GuardianStudentRepository(private val db: AppDatabase) {
     }
 
     // ✅ Delete Guardian from Room and Firestore
+    // ✅ Delete Guardian from Room and Firestore (removes from Student's 'guardians' array)
     suspend fun deleteGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
         try {
-            db.guardianDao().deleteGuardian(guardian);
+            // Delete Guardian from Room database
+            db.guardianDao().deleteGuardian(guardian)
 
-            firestore.collection("Guardians")
+            // Delete Guardian from Firestore 'Guardians' collection
+            firestore.collection("guardians")
                 .document(guardian.guardianID.toString())
-                .delete();
+                .delete()
+                .addOnSuccessListener { Log.d("Firestore", "Guardian deleted successfully.") }
+                .addOnFailureListener { Log.e("Firestore", "Error deleting guardian", it) }
 
-            firestore.collection("Students")
-                .document(guardian.studentID.toString())
-                .update("guardians", FieldValue.arrayRemove(guardian.guardianID.toString()));
+            // Remove Guardian from Student's 'guardians' array
+            firestore.collection("students")
+                .document(guardian.studentDocumentID)
+                .update("guardians", FieldValue.arrayRemove(guardian.toMap()))
+                .addOnSuccessListener { Log.d("Firestore", "Guardian removed from student.") }
+                .addOnFailureListener { Log.e("Firestore", "Error removing guardian from student", it) }
 
-            Log.d("Firestore", "Guardian deleted and relationship updated");
         } catch (e: Exception) {
-            Log.e("Firestore", "Error deleting guardian", e);
+            Log.e("Firestore", "Error deleting guardian", e)
         }
     }
 
+    suspend fun getGuardiansByUserId(userId: String): List<Guardian> {
+        return db.guardianDao().getGuardiansByUserId(userId)
+    }
     // ✅ Insert Student into Room and Firestore
     suspend fun insertStudent(student: Student) = withContext(Dispatchers.IO) {
         val studentId = db.studentDao().insertStudent(student);
 
-        firestore.collection("Students")
+        firestore.collection("students")
             .document(student.studentID.toString())
             .set(student.toMap(), SetOptions.merge())
             .addOnSuccessListener { Log.d("Firestore", "Student added successfully.") }
@@ -84,7 +126,7 @@ class GuardianStudentRepository(private val db: AppDatabase) {
     suspend fun updateStudent(student: Student) = withContext(Dispatchers.IO) {
         db.studentDao().updateStudent(student);
 
-        firestore.collection("Students")
+        firestore.collection("students")
             .document(student.studentID.toString())
             .set(student.toMap(), SetOptions.merge())
             .addOnSuccessListener { Log.d("Firestore", "Student updated successfully.") }
@@ -94,7 +136,7 @@ class GuardianStudentRepository(private val db: AppDatabase) {
     suspend fun insertOrUpdateStudent(student: Student) = withContext(Dispatchers.IO) {
         db.studentDao().upsertStudent(student) // Insert or update Student in Room
 
-        firestore.collection("Students")
+        firestore.collection("students")
             .document(student.studentID.toString())
             .set(student.toMap(), SetOptions.merge()) // Merge data in Firestore
             .addOnSuccessListener { Log.d("Firestore", "Student synced successfully.") }
@@ -105,7 +147,7 @@ class GuardianStudentRepository(private val db: AppDatabase) {
     suspend fun deleteStudent(student: Student) = withContext(Dispatchers.IO) {
         db.studentDao().deleteStudent(student);
 
-        firestore.collection("Students")
+        firestore.collection("students")
             .document(student.studentID.toString())
             .delete()
             .addOnSuccessListener { Log.d("Firestore", "Student deleted successfully.") }
@@ -119,23 +161,20 @@ class GuardianStudentRepository(private val db: AppDatabase) {
     fun getAllStudents(): Flow<List<Student>> = db.studentDao().getAllStudents();
 
     // ✅ Get Students for a Guardian
-    suspend fun getStudentsForGuardian(guardianId: Int): GuardianWithStudents? {
-        return withContext(Dispatchers.IO) {
-            db.guardianStudentDao().getGuardianWithStudents(guardianId);
-        };
+    fun getStudentsForGuardian(guardianId: Int): Flow<GuardianWithStudents?> {
+        return db.guardianStudentDao().getGuardianWithStudents(guardianId)
     }
 
     // ✅ Get Guardians for a Student
-    suspend fun getGuardiansForStudent(studentId: Int): StudentWithGuardians? {
-        return withContext(Dispatchers.IO) {
-            db.guardianStudentDao().getStudentWithGuardians(studentId);
-        };
+    fun getGuardiansForStudent(studentId: Int): Flow<StudentWithGuardians?> {
+        return db.guardianStudentDao().getStudentWithGuardians(studentId)
     }
+
 
     // ✅ Sync Guardians from Firestore to Room
     suspend fun syncGuardiansFromFirestore() = withContext(Dispatchers.IO) {
         try {
-            val snapshot = firestore.collection("Guardians").get().await()
+            val snapshot = firestore.collection("guardians").get().await()
             val guardians = snapshot.toObjects(Guardian::class.java)
             guardians.forEach { db.guardianDao().upsertGuardian(it) }
             Log.d("Firestore", "Guardians synced successfully.")
@@ -147,7 +186,7 @@ class GuardianStudentRepository(private val db: AppDatabase) {
     // ✅ Sync Students from Firestore to Room
     suspend fun syncStudentsFromFirestore() = withContext(Dispatchers.IO) {
         try {
-            val snapshot = firestore.collection("Students").get().await()
+            val snapshot = firestore.collection("students").get().await()
             val students = snapshot.toObjects(Student::class.java)
             students.forEach { db.studentDao().upsertStudent(it) }
             Log.d("Firestore", "Students synced successfully.")
@@ -161,7 +200,7 @@ class GuardianStudentRepository(private val db: AppDatabase) {
     suspend fun syncGuardianWithFirestore(guardian: Guardian, callback: (Boolean, String) -> Unit) {
         try {
             val guardianMap = guardian.toMap()
-            firestore.collection("Guardians")
+            firestore.collection("guardians")
                 .document(guardian.guardianID.toString())
                 .set(guardianMap, SetOptions.merge())
                 .addOnSuccessListener {
@@ -184,7 +223,6 @@ class GuardianStudentRepository(private val db: AppDatabase) {
             "Email" to Email,
             "QRcodeData" to QRcodeData,
             "QRcodeBase64" to QRcodeBase64,
-            "studentID" to studentID,
             "studentDocumentID" to studentDocumentID,
             "userId" to userId
         );

@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.finallab.smartschoolpickupsystem.DataModels.Guardian
+import com.finallab.smartschoolpickupsystem.EmailSender
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
 import com.finallab.smartschoolpickupsystem.Utilities.isNetworkConnected
 import com.finallab.smartschoolpickupsystem.ViewModel.GuardianStudentViewModel
@@ -14,6 +15,7 @@ import com.finallab.smartschoolpickupsystem.ViewModel.GuardianStudentViewModelFa
 import com.finallab.smartschoolpickupsystem.databinding.ActivityAddGuardianBinding
 import com.finallab.smartschoolpickupsystem.model.Repository.GuardianStudentRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.coroutines.Dispatchers
@@ -76,10 +78,17 @@ class AddGuardian : AppCompatActivity() {
      * Validate user input fields.
      */
     private fun validateInputs(): Boolean {
-        val name = binding.Gname.editText?.text.toString()
-        val number = binding.number.editText?.text.toString()
-        val cnic = binding.CNIC.editText?.text.toString()
-        val email = binding.Email.editText?.text.toString()
+        val name = binding.Gname.editText?.text.toString().trim()
+        val number = binding.number.editText?.text.toString().trim()
+        val cnic = binding.CNIC.editText?.text.toString().trim()
+        val email = binding.Email.editText?.text.toString().trim()
+
+        // Regex patterns
+        val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
+        val cnicRegex = "^[0-9]{13}$".toRegex()
+
+        // Accepts both Pakistani and international formats:
+        val phoneRegex = "^(03[0-9]{9}|\\+?[1-9][0-9]{9,14})$".toRegex()
 
         return when {
             name.isEmpty() || number.isEmpty() || cnic.isEmpty() || email.isEmpty() -> {
@@ -87,13 +96,19 @@ class AddGuardian : AppCompatActivity() {
                 false
             }
 
-            cnic.length != 13 || !cnic.all { it.isDigit() } -> {
-                binding.CNIC.error = "CNIC must be 13 digits only"
+            !cnic.matches(cnicRegex) -> {
+                binding.CNIC.error = "CNIC must be exactly 13 digits (e.g., 1234512345678)"
                 false
             }
 
-            number.length != 11 || !number.all { it.isDigit() } -> {
-                binding.number.error = "Invalid phone number"
+            !number.matches(phoneRegex) -> {
+                binding.number.error =
+                    "Phone number must be a valid Pakistani (03XXXXXXXXX) or international number (e.g., +12345678901)"
+                false
+            }
+
+            !email.matches(emailRegex) -> {
+                binding.Email.error = "Invalid email format (e.g., example@domain.com)"
                 false
             }
 
@@ -108,7 +123,6 @@ class AddGuardian : AppCompatActivity() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         val guardian = Guardian(
-            studentID = studentID,
             studentDocumentID = studentDocID,
             Gname = binding.Gname.editText?.text.toString(),
             number = binding.number.editText?.text.toString(),
@@ -155,7 +169,6 @@ class AddGuardian : AppCompatActivity() {
         }
 
         val guardianMap = hashMapOf(
-            "studentID" to guardian.studentID,
             "studentDocumentID" to guardian.studentDocumentID,
             "Gname" to guardian.Gname,
             "number" to guardian.number,
@@ -169,18 +182,16 @@ class AddGuardian : AppCompatActivity() {
         firestore.collection("guardians")
             .add(guardianMap)
             .addOnSuccessListener { documentReference ->
-                // Set the Firestore document ID
                 guardian.guardianDocId = documentReference.id
-
-                // Save updated guardian to local Room database
                 saveGuardianToLocalDatabase(guardian)
 
                 Toast.makeText(
                     this,
-                    "Guardian Registered Successfully in Firestore",
+                    "Guardian Registered Successfully with ID: ${documentReference.id}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
@@ -209,17 +220,116 @@ class AddGuardian : AppCompatActivity() {
      * Check for duplicate CNIC in Firestore.
      */
     private fun checkForDuplicateCNIC(cnic: String, callback: (Boolean) -> Unit) {
-        firestore.collection("guardians")
-            .whereEqualTo("CNIC", cnic)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                callback(!querySnapshot.isEmpty) // Returns true if duplicate exists
+        if (isNetworkConnected(this)) {
+            // Check Firestore if online
+            firestore.collection("guardians")
+                .whereEqualTo("CNIC", cnic)
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    callback(!snapshot.isEmpty) // True if duplicate exists
+                }
+                .addOnFailureListener {
+                    showToast("Error checking CNIC online: ${it.message}")
+                    callback(false)
+                }
+        } else {
+            // Check Room if offline
+            lifecycleScope.launch(Dispatchers.IO) {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+                val localGuardians = viewModel.getGuardiansByUserId(userId)
+                val isDuplicate = localGuardians.any { it.CNIC == cnic }
+                withContext(Dispatchers.Main) {
+                    callback(isDuplicate)
+                }
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Error checking CNIC: ${e.message}", Toast.LENGTH_SHORT).show()
-                callback(false)
+        }
+    }
+    private fun generateRandomPassword(length: Int = 8): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#"
+        return (1..length).map { chars.random() }.joinToString("")
+    }
+    private fun addGuardianAndLinkToStudent(guardian: Guardian, studentDocId: String) {
+        // Step 1: Create guardian in Firebase Authentication
+
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(guardian.Email, generateRandomPassword())
+            .addOnSuccessListener { authResult ->
+                val guardianUserId = authResult.user?.uid
+
+                // Step 2: Store basic info in 'users' collection
+                val userData = mapOf(
+                    "schoolID" to FirebaseAuth.getInstance().currentUser?.uid,
+                    "guardianUserId" to guardianUserId,
+                    "email" to guardian.Email,
+                    "role" to "guardian"
+                )
+                firestore.collection("users").document(guardianUserId!!)
+                    .set(userData)
+                    .addOnSuccessListener {
+                        // Step 3: Store guardian-specific data in 'guardians' collection
+                        val guardianData = mapOf(
+                            "name" to guardian.Gname,
+                            "phone" to guardian.number,
+                            "cnic" to guardian.CNIC,
+                            "students" to arrayListOf(studentDocId)
+                        )
+
+                        firestore.collection("guardians").document(guardianUserId)
+                            .set(guardianData)
+                            .addOnSuccessListener {
+                                // Step 4: Link guardian to the student
+                                linkGuardianToStudent(guardianUserId, studentDocId)
+                                Toast.makeText(this, "Guardian linked successfully!", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "Failed to store guardian info", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Failed to store user info", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Guardian registration failed", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun linkGuardianToStudent(guardianUserId: String, studentDocId: String) {
+        firestore.collection("students").document(studentDocId)
+            .update("guardians", FieldValue.arrayUnion(guardianUserId))
+            .addOnSuccessListener {
+                Toast.makeText(this, "Guardian linked to student!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to link guardian to student", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun sendGuardianEmail(guardianEmail: String, guardianPassword: String) {
+        val senderEmail = "yasnaishereandthere@gmail.com"
+        val senderPassword = "muff xtml lnep fygd\n"
+
+        val subject = "Your Guardian Account Credentials"
+        val message = """
+        Dear Guardian,
+
+        Your account has been created successfully.
+
+        Login details:
+        Email: $guardianEmail
+        Password: $guardianPassword
+
+        Please log in and change your password.
+
+        Regards,
+        School Admin
+    """.trimIndent()
+
+        // Run in a background thread
+        Thread {
+            EmailSender(senderEmail, senderPassword).sendEmail(guardianEmail, subject, message)
+        }.start()
+    }
+
 
 
 

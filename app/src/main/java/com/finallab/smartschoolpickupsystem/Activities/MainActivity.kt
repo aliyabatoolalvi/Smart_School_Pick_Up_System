@@ -2,6 +2,7 @@ package com.finallab.smartschoolpickupsystem.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity(), OnStudentDeletedListener {
         binding.backButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed() // Updated for modern APIs
         }
+
     }
 
     override fun onResume() {
@@ -57,7 +59,9 @@ class MainActivity : AppCompatActivity(), OnStudentDeletedListener {
                     // Fetch student data in the background
                     val students = withContext(Dispatchers.IO) {
                         AppDatabase.getDatabase(this@MainActivity).studentDao().getStudentsByUserId(userId)
+
                     }
+                    Log.d("StudentData", "Loaded Students: $students")
 
                     // Update the adapter with new data
                     adapter.updateData(students.toMutableList())

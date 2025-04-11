@@ -50,8 +50,8 @@ interface StudentDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllStudents(student: List<Student>)
 
-        @Query("SELECT * FROM Student WHERE userId = :userId")
-        suspend fun getStudentsByUserId(userId: String): List<Student>
+    @Query("SELECT * FROM Student WHERE userId = :userId")
+    suspend fun getStudentsByUserId(userId: String): List<Student>
     }
 
 

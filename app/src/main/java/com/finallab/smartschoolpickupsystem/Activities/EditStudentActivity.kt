@@ -145,7 +145,7 @@ class EditStudentActivity : AppCompatActivity() {
     // ✅ Load student data from Room and display in EditText fields
     private fun loadStudentData() {
         lifecycleScope.launch {
-            student = repository.getGuardiansForStudent(studentId)?.student
+            student = repository.getStudentById(studentId)
             student?.let {
                 binding.ns.setText(it.Sname ?: "")
                 binding.rs.setText(it.reg ?: "")
