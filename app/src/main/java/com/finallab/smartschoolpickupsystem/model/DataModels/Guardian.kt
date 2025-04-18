@@ -5,21 +5,22 @@ import androidx.room.PrimaryKey
 
 
 @Entity
-data class Guardian (
+data class Guardian(
     @PrimaryKey(autoGenerate = true)
-    var guardianID: Int=0,
-    var studentDocumentID : String,
-    var Gname: String,
-    var number: String,
-    var CNIC: String,
-    var Email: String,
-    var QRcodeData: String,
-    var QRcodeBase64: String,
-    var userId: String,
+    var guardianID: Int = 0,
+    var studentDocumentID: String = "",
+    var Gname: String = "",
+    var number: String = "",
+    var CNIC: String = "",
+    var Email: String = "",
+    var QRcodeData: String = "",
+    var QRcodeBase64: String = "",
+    var userId: String = "",
     var guardianDocId: String = ""
-
-
 )
+
+
+
 
 private fun Guardian.toMap(): Map<String, Any?> {
     return mapOf(

@@ -58,6 +58,9 @@
         <activity
             android:name=".Activities.AddStudentActivity"
             android:exported="false" />
+
+        <activity android:name=".Activities.EditGuardianActivity" />
+
         <activity
             android:name=".Activities.StudentDetails"
             android:exported="false" />

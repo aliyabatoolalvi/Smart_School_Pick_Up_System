@@ -19,6 +19,10 @@ class GuardianStudentRepository(private val db: AppDatabase) {
         return db.studentDao().getStudentById(studentId)
     }
 
+    suspend fun getGuardianById(guardianId: Int): Guardian? {
+        return db.guardianDao().getGuardianById(guardianId)
+    }
+
     // ✅ Insert Guardian into Room and Firestore
 //    suspend fun insertGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
 //        val guardianId = db.guardianDao().insertGuardian(guardian);
@@ -32,7 +36,6 @@ class GuardianStudentRepository(private val db: AppDatabase) {
 //            .addOnFailureListener { Log.e("Firestore", "Error adding guardian", it) };
 //    }
 
-    // ✅ Insert Guardian into Room and Firestore (adds Guardian to Student's 'guardians' array)
     suspend fun insertGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
         try {
             // Insert Guardian into Room database
@@ -82,9 +85,7 @@ class GuardianStudentRepository(private val db: AppDatabase) {
             .addOnFailureListener { Log.e("Firestore", "Error syncing guardian", it) }
     }
 
-    // ✅ Delete Guardian from Room and Firestore
-    // ✅ Delete Guardian from Room and Firestore (removes from Student's 'guardians' array)
-    suspend fun deleteGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
+  suspend fun deleteGuardian(guardian: Guardian) = withContext(Dispatchers.IO) {
         try {
             // Delete Guardian from Room database
             db.guardianDao().deleteGuardian(guardian)

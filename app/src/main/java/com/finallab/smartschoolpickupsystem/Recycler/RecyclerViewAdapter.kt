@@ -1,20 +1,21 @@
 package com.finallab.smartschoolpickupsystem.Recycler
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.finallab.smartschoolpickupsystem.Activities.EditGuardianActivity
 import com.finallab.smartschoolpickupsystem.Activities.EditStudentActivity
 import com.finallab.smartschoolpickupsystem.Activities.GuardianDetails
+import com.finallab.smartschoolpickupsystem.Activities.MainActivity
 import com.finallab.smartschoolpickupsystem.Activities.StudentDetails
 import com.finallab.smartschoolpickupsystem.DataModels.Guardian
 import com.finallab.smartschoolpickupsystem.DataModels.Student
-import com.finallab.smartschoolpickupsystem.OnStudentDeletedListener
+import com.finallab.smartschoolpickupsystem.R
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
 import com.finallab.smartschoolpickupsystem.databinding.GuardianItemBinding
 import com.finallab.smartschoolpickupsystem.databinding.StudentItemBinding
@@ -23,13 +24,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 interface OnItemDeletedListener {
-    fun onItemDeleted()
+    fun onDataUpdated()
 }
 
 class RecyclerViewAdapter(
     private val items: MutableList<Any>,
     private val lifecycleScope: CoroutineScope,
-    private val listener: OnStudentDeletedListener?=null,
+    private val listener: OnItemDeletedListener? = null,
+
     private val onDeleteClick: ((Guardian) -> Unit)? = null
 
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -65,6 +67,8 @@ class RecyclerViewAdapter(
     fun updateData(newData: MutableList<Any>?) {
         items.clear()
         newData?.let { items.addAll(it) }
+
+
         notifyDataSetChanged()
     }
 
@@ -119,7 +123,7 @@ class RecyclerViewAdapter(
                         .delete()
                         .addOnSuccessListener {
                             Toast.makeText(holder.itemView.context, "Deleted from Firestore", Toast.LENGTH_SHORT).show()
-                            listener?.onDataUpdated() // Notify via interface
+                            listener?.onDataUpdated()
                         }
                         .addOnFailureListener {
                             Toast.makeText(holder.itemView.context, "Failed to delete from Firestore", Toast.LENGTH_SHORT).show()
@@ -132,6 +136,8 @@ class RecyclerViewAdapter(
             } catch (e: Exception) {
                 Toast.makeText(holder.itemView.context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+
+
         }
     }
 
@@ -143,13 +149,20 @@ class RecyclerViewAdapter(
 
         holder.binding.delG.setOnClickListener {
             showGuardianDeleteConfirmation(holder, guardian, position)
-            onDeleteClick?.invoke(guardian)
+        }
 
+        holder.binding.editG.setOnClickListener {
+            val intent = Intent(holder.itemView.context, EditGuardianActivity::class.java).apply {
+                putExtra("guardianID", guardian.guardianID)
+                putExtra("guardianDocumentID", guardian.guardianDocId)
+            }
+            holder.itemView.context.startActivity(intent)
         }
 
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, GuardianDetails::class.java).apply {
                 putExtra("guardianID", guardian.guardianID)
+                putExtra("guardianDocumentID", guardian.guardianDocId)
             }
             holder.itemView.context.startActivity(intent)
         }
@@ -159,7 +172,10 @@ class RecyclerViewAdapter(
         AlertDialog.Builder(holder.itemView.context)
             .setTitle("Delete Confirmation")
             .setMessage("Are you sure you want to delete this guardian?")
-            .setPositiveButton("Yes") { _, _ -> deleteGuardian(holder, guardian, position) }
+            .setPositiveButton("Yes") { _, _ ->
+                deleteGuardian(holder, guardian, position)
+                onDeleteClick?.invoke(guardian)
+            }
             .setNegativeButton("Cancel", null)
             .show()
     }
@@ -175,7 +191,7 @@ class RecyclerViewAdapter(
                         .delete()
                         .addOnSuccessListener {
                             Toast.makeText(holder.itemView.context, "Deleted from Firestore", Toast.LENGTH_SHORT).show()
-                            listener?.onDataUpdated() // Notify via interface
+                            listener?.onDataUpdated()
                         }
                         .addOnFailureListener {
                             Toast.makeText(holder.itemView.context, "Failed to delete from Firestore", Toast.LENGTH_SHORT).show()

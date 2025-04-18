@@ -20,19 +20,18 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        // Initialize FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
 
-        // Find the button by its ID
         forward = findViewById(R.id.advance);
 
-        // Set a click listener for the button
         forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkUserAndNavigate();
             }
         });
+
+        
     }
 
     @Override
@@ -46,10 +45,8 @@ public class WelcomeActivity extends AppCompatActivity {
         Intent intent;
 
         if (currentUser == null) {
-            // If no user is logged in, go to LoginActivity
             intent = new Intent(WelcomeActivity.this, LoginActivity.class);
         } else {
-            // If a user is logged in, go to HomeActivity
             intent = new Intent(WelcomeActivity.this, HomeActivity.class);
         }
 

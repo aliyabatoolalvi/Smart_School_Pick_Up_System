@@ -16,7 +16,6 @@ data class Student (
     var section: String,
     var userId: String,
     var studentDocId: String = "",
-    var gCNIC: String,
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
@@ -27,7 +26,6 @@ data class Student (
             "section" to section,
             "userId" to userId,
             "studentDocId" to studentDocId,
-            "gCNIC" to gCNIC,
         )
     }
 }

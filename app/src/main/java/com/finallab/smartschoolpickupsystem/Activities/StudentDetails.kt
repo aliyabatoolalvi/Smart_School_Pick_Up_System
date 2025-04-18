@@ -8,15 +8,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.finallab.smartschoolpickupsystem.DataModels.Guardian
+import com.finallab.smartschoolpickupsystem.DataModels.GuardianStudentCrossRef
 import com.finallab.smartschoolpickupsystem.DataModels.Student
-import com.finallab.smartschoolpickupsystem.OnStudentDeletedListener
+import com.finallab.smartschoolpickupsystem.OnDataChangedListener
+import com.finallab.smartschoolpickupsystem.Recycler.OnItemDeletedListener
 import com.finallab.smartschoolpickupsystem.Recycler.RecyclerViewAdapter
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
+import com.finallab.smartschoolpickupsystem.Utilities
 import com.finallab.smartschoolpickupsystem.databinding.ActivityStudentDetailsBinding
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -26,48 +27,50 @@ class StudentDetails : AppCompatActivity() {
     private val firestore = FirebaseFirestore.getInstance()
     private val guardiansList = mutableListOf<Guardian>()
     private lateinit var adapter: RecyclerViewAdapter
-    private var onStudentDeletedListener: OnStudentDeletedListener? = null
-
+    private var onItemDeletedListener: OnItemDeletedListener? = null
+    private var dataChangedListener: OnDataChangedListener? = null
+    fun setOnDataChangedListener(listener: OnDataChangedListener?) {
+        this.dataChangedListener = listener
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStudentDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Get student ID from Intent
         val id = intent.getIntExtra("id", -1)
         if (id == -1) {
             Toast.makeText(this, "Invalid student ID", Toast.LENGTH_SHORT).show()
-            Log.d("StudentDetails", "Received Student ID: $id")
             finish()
             return
         }
 
-        if (id != -1) {
-            lifecycleScope.launch {
-                val db = AppDatabase.getDatabase(this@StudentDetails)
-                val fetchedStudent = db.studentDao().getStudentById(id)
+        adapter = RecyclerViewAdapter(
+            guardiansList as MutableList<Any>,
+            lifecycleScope,
+            onDeleteClick = { guardian -> deleteGuardian(guardian) }
+        )
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
 
-                if (fetchedStudent == null) {
-                    Toast.makeText(this@StudentDetails, "Student not found", Toast.LENGTH_SHORT)
-                        .show()
-                    finish()
-                    return@launch
-                }
+        lifecycleScope.launch {
+            val db = AppDatabase.getDatabase(this@StudentDetails)
+            val fetchedStudent = db.studentDao().getStudentById(id)
 
-                student = fetchedStudent
-                displayStudentDetails()
-                setupRecyclerView()
-                fetchGuardiansForStudent(student.studentDocId)
+            if (fetchedStudent == null) {
+                Toast.makeText(this@StudentDetails, "Student not found", Toast.LENGTH_SHORT).show()
+                finish()
+                return@launch
             }
-        } else {
-            Log.e("StudentDetails", "Invalid studentID")
-        }
 
+            student = fetchedStudent
+            displayStudentDetails()
+            loadGuardians()
+        }
 
         binding.addG.setOnClickListener {
             val intent = Intent(this, AddGuardian::class.java).apply {
-                putExtra("id", id) // Pass student ID
-                putExtra("studentDocumentID", student.studentDocId) // Pass Firestore document ID
+                putExtra("id", id)
+                putExtra("studentDocumentID", student.studentDocId)
             }
             startActivity(intent)
         }
@@ -84,81 +87,34 @@ class StudentDetails : AppCompatActivity() {
         binding.sectionS.text = "Section: ${student.section}"
     }
 
-    private fun setupRecyclerView() {
-        adapter = RecyclerViewAdapter(
-            guardiansList as MutableList<Any>,
-            lifecycleScope,
-            onDeleteClick = { guardian ->
-                deleteGuardian(guardian)
-            }
-        )
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
+    fun setOnItemDeletedListener(listener: OnItemDeletedListener?) {
+        this.onItemDeletedListener = listener
     }
-
-    fun setOnStudentDeletedListener(listener: OnStudentDeletedListener?) {
-        this.onStudentDeletedListener = listener
-    }
-
-
-    // Fetch guardians from Firestore
-    private fun fetchGuardiansFromFirestore() {
-        if (!::student.isInitialized || student.studentDocId.isEmpty()) {
-            Toast.makeText(this, "No associated Firestore record", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        firestore.collection("guardians")
-            .whereEqualTo("studentDocumentID", student.studentDocId)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                guardiansList.clear()
-
-                for (document in querySnapshot.documents) {
-                    val guardian = document.toObject(Guardian::class.java)?.apply {
-                        guardianDocId = document.id
-                    }
-                    guardian?.let { guardiansList.add(it) }
-                }
-
-                adapter.notifyDataSetChanged()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Failed to load guardians", Toast.LENGTH_SHORT).show()
-            }
-    }
-
 
     private fun deleteGuardian(guardian: Guardian) {
         lifecycleScope.launch {
             try {
-                // Delete from Room Database
-                AppDatabase.getDatabase(this@StudentDetails).guardianDao()
-                    .deleteGuardian(guardian)
+                val db = AppDatabase.getDatabase(this@StudentDetails)
+                db.guardianDao().deleteGuardian(guardian)
 
-                // Notify Listener
-                onStudentDeletedListener?.onDataUpdated()
-
-                // Delete from Firestore
                 firestore.collection("guardians")
-                    .document(guardian.guardianDocId) // Ensure guardianDocId is stored
+                    .document(guardian.guardianDocId)
                     .delete()
                     .addOnSuccessListener {
-                        Toast.makeText(this@StudentDetails, "Guardian deleted", Toast.LENGTH_SHORT)
-                            .show()
-                        guardiansList.remove(guardian) // Remove from local list
-                        adapter.notifyDataSetChanged() // Refresh RecyclerView
+                        Toast.makeText(this@StudentDetails, "Guardian deleted", Toast.LENGTH_SHORT).show()
+                        guardiansList.remove(guardian)
+                        adapter.notifyDataSetChanged()
+
+                        onItemDeletedListener?.onDataUpdated()
+
+                        val listener = dataChangedListener
+                        listener?.onDataUpdated()
                     }
                     .addOnFailureListener {
-                        Toast.makeText(
-                            this@StudentDetails,
-                            "Failed to delete guardian",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@StudentDetails, "Failed to delete guardian", Toast.LENGTH_SHORT).show()
                     }
             } catch (e: Exception) {
-                Toast.makeText(this@StudentDetails, "Error deleting guardian", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(this@StudentDetails, "Error deleting guardian", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -166,43 +122,40 @@ class StudentDetails : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (::student.isInitialized) {
+            loadGuardians()
+        }
+    }
 
-        if (!::student.isInitialized) return
+    private fun loadGuardians() {
+        guardiansList.clear()
 
-        val db = AppDatabase.getDatabase(this@StudentDetails)
+        if (Utilities.isNetworkConnected(this)) {
+            fetchGuardiansFromFirestore(student.studentDocId)
+        } else {
+            loadGuardiansFromRoom(student.studentID)
+        }
+    }
 
+    private fun loadGuardiansFromRoom(studentID: Int) {
+        val db = AppDatabase.getDatabase(this)
         lifecycleScope.launch {
-            db.guardianStudentDao().getStudentWithGuardians(student.studentID).collect { studentWithGuardians ->
+            db.guardianStudentDao().getStudentWithGuardians(studentID).collect { studentWithGuardians ->
                 guardiansList.clear()
-
-                // Add guardians to the list
-                studentWithGuardians?.guardians?.let { guardiansList.addAll(it) }
-
-                Log.d("StudentDetails", "Room ID: ${student.studentID}, Firestore ID: ${student.studentDocId}")
-                Log.d("StudentDetails", "Guardians fetched: ${guardiansList.size}")
-
-                // Perform additional background logging if needed
-                CoroutineScope(Dispatchers.IO).launch {
-                    studentWithGuardians?.let {
-                        Log.d("Room", "Student: ${it.student}")
-                        it.guardians.forEach { guardian ->
-                            Log.d("Room", "Guardian: ${guardian.Gname}")
-                        }
-                    }
+                studentWithGuardians?.guardians?.let {
+                    guardiansList.addAll(it)
                 }
-
-                // Update the adapter
+                Log.d("StudentDetails", "Loaded guardians offline: ${guardiansList.size}")
                 adapter.notifyDataSetChanged()
 
-                // Fallback to Firestore if Room has no guardians
                 if (guardiansList.isEmpty()) {
-                    fetchGuardiansFromFirestore()
+                    Toast.makeText(this@StudentDetails, "No guardians available offline", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    private fun fetchGuardiansForStudent(studentDocId: String) {
+    private fun fetchGuardiansFromFirestore(studentDocId: String) {
         firestore.collection("students").document(studentDocId)
             .get()
             .addOnSuccessListener { studentDoc ->
@@ -210,6 +163,7 @@ class StudentDetails : AppCompatActivity() {
 
                 if (guardianIds.isEmpty()) {
                     Toast.makeText(this, "No guardians linked", Toast.LENGTH_SHORT).show()
+                    adapter.notifyDataSetChanged()
                     return@addOnSuccessListener
                 }
 
@@ -217,28 +171,36 @@ class StudentDetails : AppCompatActivity() {
                     .whereIn(FieldPath.documentId(), guardianIds)
                     .get()
                     .addOnSuccessListener { guardianDocs ->
-                        guardiansList.clear()
+                        lifecycleScope.launch {
+                            val db = AppDatabase.getDatabase(this@StudentDetails)
 
-                        for (doc in guardianDocs) {
-                            val guardian = doc.toObject(Guardian::class.java).apply {
-                                guardianDocId = doc.id
+                            guardiansList.clear()
+                            for (doc in guardianDocs) {
+                                val guardian = doc.toObject(Guardian::class.java).apply {
+                                    guardianDocId = doc.id
+                                }
+                                guardiansList.add(guardian)
+
+                                // Save to Room
+                                db.guardianDao().insertGuardian(guardian)
+                                db.guardianStudentDao().insertGuardianStudentCrossRef(
+                                    GuardianStudentCrossRef(
+                                        guardian.guardianID,
+                                        student.studentID
+                                    )
+                                )
                             }
-                            guardiansList.add(guardian)
+                            Log.d("StudentDetails", "Loaded guardians online: ${guardiansList.size}")
+                            adapter.notifyDataSetChanged()
                         }
-
-                        adapter.notifyDataSetChanged()
                     }
                     .addOnFailureListener {
-                        Toast.makeText(this, "Failed to load guardian info", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Failed to load guardians from server", Toast.LENGTH_SHORT).show()
+                        adapter.notifyDataSetChanged()
                     }
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Failed to fetch student", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to fetch student info", Toast.LENGTH_SHORT).show()
             }
     }
-
-
-
 }
-
-

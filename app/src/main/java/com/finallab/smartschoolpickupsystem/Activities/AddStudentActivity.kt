@@ -108,9 +108,7 @@ class AddStudentActivity : AppCompatActivity() {
             studentClass = studentClass,
             section = section,
             userId = currentUser?.uid ?: "",
-            studentDocId = "",
-            gCNIC = selectedGuardianCNIC
-        )
+            studentDocId = "")
 
         if (isNetworkConnected()) {
             saveStudentToFirestore(student)

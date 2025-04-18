@@ -19,7 +19,7 @@ import com.finallab.smartschoolpickupsystem.Activities.StudentDetails;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class ProfileFragment extends Fragment implements OnStudentDeletedListener {
+public class ProfileFragment extends Fragment implements OnStudentDeletedListener, OnDataChangedListener {
 
 
     private TextView textViewName, textViewEmail, textViewAddress, studentcount, guardiancount;
@@ -138,7 +138,7 @@ public class ProfileFragment extends Fragment implements OnStudentDeletedListene
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof StudentDetails) {
-            ((StudentDetails) context).setOnStudentDeletedListener(this);
+            ((StudentDetails) context).setOnItemDeletedListener(this::onDataUpdated);
         }
     }
 

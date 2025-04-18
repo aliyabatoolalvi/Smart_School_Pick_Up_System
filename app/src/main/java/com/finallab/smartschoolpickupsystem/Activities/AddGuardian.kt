@@ -31,7 +31,6 @@ class AddGuardian : AppCompatActivity() {
     private lateinit var binding: ActivityAddGuardianBinding
     private val firestore = FirebaseFirestore.getInstance()
 
-    // Initialize the ViewModel using the Factory for the repository
     private val viewModel: GuardianStudentViewModel by viewModels {
         GuardianStudentViewModelFactory(GuardianStudentRepository(AppDatabase.getDatabase(this)))
     }
@@ -68,6 +67,7 @@ class AddGuardian : AppCompatActivity() {
                     } else {
                         val qrData = UUID.randomUUID().toString()
                         saveGuardianWithStudentDocID(studentID, studentDocID, qrData)
+
                     }
                 }
             }
@@ -116,9 +116,6 @@ class AddGuardian : AppCompatActivity() {
         }
     }
 
-    /**
-     * Save guardian data along with student document ID.
-     */
     private fun saveGuardianWithStudentDocID(studentID: Int, studentDocID: String, qrData: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
@@ -134,12 +131,9 @@ class AddGuardian : AppCompatActivity() {
         )
 
         saveGuardianToFirestore(guardian)
+        sendGuardianEmail(guardian.Email,generateRandomPassword(8))
     }
 
-
-    /**
-     * Generate a QR code and convert it to Base64.
-     */
     private fun generateQRCodeBase64(qrData: String): String {
         return try {
             val barcodeEncoder = BarcodeEncoder()
@@ -158,9 +152,6 @@ class AddGuardian : AppCompatActivity() {
         }
     }
 
-    /**
-     * Save guardian data to Firestore.
-     */
     private fun saveGuardianToFirestore(guardian: Guardian) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
@@ -197,9 +188,6 @@ class AddGuardian : AppCompatActivity() {
             }
     }
 
-    /**
-     * Save guardian data to the local Room database.
-     */
     private fun saveGuardianToLocalDatabase(guardian: Guardian) {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.insertGuardian(guardian)
@@ -216,9 +204,6 @@ class AddGuardian : AppCompatActivity() {
         }
     }
 
-    /**
-     * Check for duplicate CNIC in Firestore.
-     */
     private fun checkForDuplicateCNIC(cnic: String, callback: (Boolean) -> Unit) {
         if (isNetworkConnected(this)) {
             // Check Firestore if online
