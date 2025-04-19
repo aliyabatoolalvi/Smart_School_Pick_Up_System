@@ -39,21 +39,6 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Find your container layout
-        LinearLayout layout = view.findViewById(R.id.container);
-
-        // Create your crash button
-        Button crashButton = new Button(getContext());
-        crashButton.setText("Test Crash");
-        crashButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                throw new RuntimeException("Test Crash"); // Force a crash
-            }
-        });
-
-        // Add the button to the layout
-        layout.addView(crashButton);
 
         return view;
     }

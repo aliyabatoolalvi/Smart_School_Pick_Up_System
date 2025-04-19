@@ -11,6 +11,7 @@ kotlin = "1.9.22"
 coreKtx = "1.15.0"
 googleAndroidLibrariesMapsplatformSecretsGradlePlugin = "2.0.1"
 playServices = "17.0.0"
+googleServices = "4.4.2"
 playServicesMaps = "18.2.0"
 transportApi = "4.0.0"
 
@@ -31,4 +32,8 @@ transport-api = { group = "com.google.android.datatransport", name = "transport-
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 google-android-libraries-mapsplatform-secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "googleAndroidLibrariesMapsplatformSecretsGradlePlugin" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.3" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+
+
 

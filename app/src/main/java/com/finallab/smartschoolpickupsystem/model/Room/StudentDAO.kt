@@ -31,6 +31,8 @@ interface StudentDAO {
 
     @Query("SELECT COUNT(*) FROM Student")
     fun getStudentCount(): Int
+//    @Query("SELECT * FROM Student WHERE userId = :userId AND Sname LIKE '%' || :query || '%'")
+//    fun searchStudentsByName(userId: String, query: String): List<Student>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertStudent(student: Student)
