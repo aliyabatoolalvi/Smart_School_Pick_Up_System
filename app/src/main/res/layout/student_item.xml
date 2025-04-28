@@ -22,7 +22,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#5AA9E6">
+            android:background="@color/menuItem"
+            >
 
             <TextView
                 android:id="@+id/classstu"
@@ -31,7 +32,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:text="Class"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/form_bg"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/namestu"
@@ -46,7 +47,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:text="Name"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/form_bg"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/classstu"
@@ -61,7 +62,10 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/delS"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/baseline_edit_24" />
+                app:srcCompat="@drawable/baseline_edit_24"
+                android:backgroundTint="@color/dark_bg"
+                android:background="@color/white_bg"
+                />
 
             <ImageView
                 android:id="@+id/delS"
@@ -71,6 +75,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:background="@color/tint"
+                android:backgroundTint="#D50000"
                 app:srcCompat="@drawable/baseline_delete_24" />
 
             <TextView
@@ -79,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="Section"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/form_bg"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/classstu"
                 app:layout_constraintStart_toEndOf="@+id/classstu"

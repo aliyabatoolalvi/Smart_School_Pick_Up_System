@@ -24,6 +24,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText, passwordEditText;
@@ -36,13 +37,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (mAuth.getCurrentUser() != null) {
-            // User is already logged in, go to HomeActivity
-            Intent intent = new Intent(this, HomeActivity.class);
-            startActivity(intent);
-            finish(); // Prevent returning to login screen
+            // User is already logged in, check their role and redirect accordingly
+            checkUserRoleAndRedirect();
         }
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +61,6 @@ public class LoginActivity extends AppCompatActivity {
             String password = passwordEditText.getText().toString().trim();
 
             if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-//                Toast.makeText(LoginActivity.this, "Enter email and password", Toast.LENGTH_SHORT).show();
                 Utilities.showErrorSnack(findViewById(android.R.id.content), this, "Enter email and password");
                 return;
             }
@@ -73,24 +70,17 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-
             progress.setVisibility(View.VISIBLE);
             mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-
-                                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                progress.setVisibility(View.GONE);
-
-                                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                progress.setVisibility(View.GONE);
-                                Utilities.showErrorSnack(findViewById(android.R.id.content), LoginActivity.this, "Authentication failed: " + task.getException().getMessage());
-                            }
+                    .addOnCompleteListener(LoginActivity.this, task -> {
+                        if (task.isSuccessful()) {
+                            // Login successful, now check user role
+                            checkUserRoleAndRedirect();
+                        } else {
+                            progress.setVisibility(View.GONE);
+                            Utilities.showErrorSnack(findViewById(android.R.id.content),
+                                    LoginActivity.this, "Authentication failed: " +
+                                            task.getException().getMessage());
                         }
                     });
         });
@@ -119,5 +109,48 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void checkUserRoleAndRedirect() {
+        String userId = mAuth.getCurrentUser().getUid();
 
+        FirebaseFirestore.getInstance().collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    progress.setVisibility(View.GONE);
+                    if (document.exists()) {
+                        String role = document.getString("role");
+
+                        Intent intent;
+                        if (role != null) {
+                            switch (role) {
+                                case "schoolAdmin":
+                                    intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                    startActivity(intent);
+
+                                    break;
+                                case "guardian":
+                                    //intent = new Intent(LoginActivity.this, GuardianDashboardActivity.class);
+                                    break;
+                                case "guard":
+                                    //intent = new Intent(LoginActivity.this, GuardDashboardActivity.class);
+                                    break;
+                                default:
+                                    Toast.makeText(this, "Invalid role.", Toast.LENGTH_SHORT).show();
+                                    return;
+                            }
+                            //startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(this, "Role not found.", Toast.LENGTH_SHORT).show();
+                            mAuth.signOut(); // Log out user if role is missing
+                        }
+                    } else {
+                        Toast.makeText(this, "User not found in database.", Toast.LENGTH_SHORT).show();
+                        mAuth.signOut(); // Log out user if document doesn't exist
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    progress.setVisibility(View.GONE);
+                    Toast.makeText(this, "Error checking user role: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
 }

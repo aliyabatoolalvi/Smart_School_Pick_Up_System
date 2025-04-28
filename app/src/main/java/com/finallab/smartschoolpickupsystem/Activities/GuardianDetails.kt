@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,59 +36,47 @@ class GuardianDetails : AppCompatActivity() {
 
         setupBackButton()
 
-        val guardianId = intent.getIntExtra("id", -1)
-        val docId = intent.getStringExtra("docId")
+        val guardianId = intent.getIntExtra("guardianID", -1)
+        val docId = intent.getStringExtra("guardianDocumentID")
 
         if (docId != null && Utilities.isNetworkConnected(this)) {
-            // Load from Firestore
-            val firestore = FirebaseFirestore.getInstance()
-            firestore.collection("guardians")
-                .document(docId)
-                .get()
-                .addOnSuccessListener { document ->
-                    if (document != null && document.exists()) {
-                        val guardianName = document.getString("Gname")
-                        val guardianPhone = document.getString("number")
-                        val guardianCNIC = document.getString("CNIC")
-                        val guardianEmail = document.getString("Email")
-                        val qrCodeBase64 = document.getString("QRcodeBase64")
-
-                        // Set text with labels, just like in Room version
-                        binding.textView5.text = "Name: \n$guardianName"
-                        binding.textView7.text = "Phone: \n$guardianPhone"
-                        binding.textView8.text = "CNIC: \n$guardianCNIC"
-                        binding.textView9.text = "Email: \n$guardianEmail"
-
-                        // Make phone and email clickable
-                        setupClickableContact(binding.textView7, guardianPhone, "tel:")
-                        setupClickableContact(binding.textView9, guardianEmail, "mailto:")
-
-                        // Load QR code
-                        loadQRCode(qrCodeBase64)
-
-                    } else {
-                        Toast.makeText(this, "Guardian not found in Firestore.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error fetching guardian: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-
-    } else if (guardianId != -1) {
-            // Load from Room
-            loadGuardianDetails(guardianId)
+            loadGuardianFromFirestore(docId)
+        } else if (guardianId != -1) {
+            loadGuardianDetailsFromRoom(guardianId)
         } else {
-            // Neither docId nor valid guardianId — show error
             showErrorAndExit("No guardian information provided")
         }
     }
-
 
     private fun setupBackButton() {
         binding.backButton.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
     }
 
-    private fun loadGuardianDetails(guardianId: Int) {
+    private fun loadGuardianFromFirestore(docId: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        firestore.collection("guardians")
+            .document(docId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val guardian = Guardian(
+                        Gname = document.getString("Gname") ?: "",
+                        number = document.getString("number") ?: "",
+                        CNIC = document.getString("CNIC") ?: "",
+                        Email = document.getString("Email") ?: "",
+                        QRcodeBase64 = document.getString("QRcodeBase64") ?: ""
+                    )
+                    displayGuardianDetails(guardian)
+                } else {
+                    showToast("Guardian not found in Firestore.")
+                }
+            }
+            .addOnFailureListener { e ->
+                showToast("Error fetching guardian: ${e.message}")
+            }
+    }
+
+    private fun loadGuardianDetailsFromRoom(guardianId: Int) {
         lifecycleScope.launch {
             try {
                 val guardianResult = withContext(Dispatchers.IO) {
@@ -108,27 +95,28 @@ class GuardianDetails : AppCompatActivity() {
         }
     }
 
-
     @SuppressLint("SetTextI18n")
     private fun displayGuardianDetails(guardian: Guardian) {
-        with(binding) {
-            textView5.text = "Name: \n${guardian.Gname}"
-            textView7.text = "Phone: \n${guardian.number}"
-            textView8.text = "CNIC: \n${guardian.CNIC}"
-            textView9.text = "Email: \n${guardian.Email}"
+        val formattedCNIC = formatCNIC(guardian.CNIC)
+        val formattedPhone = formatPhoneNumber(guardian.number)
 
+        with(binding) {
+            textView5.text = "Name: ${guardian.Gname}"
+            textView7.text = "Phone: $formattedPhone"
+            textView8.text = "CNIC: $formattedCNIC"
+            textView9.text = "Email: ${guardian.Email}"
         }
 
         setupClickableContact(binding.textView7, guardian.number, "tel:")
         setupClickableContact(binding.textView9, guardian.Email, "mailto:")
-
 
         loadQRCode(guardian.QRcodeBase64)
     }
 
     private fun setupClickableContact(textView: TextView, contactInfo: String?, prefix: String) {
         contactInfo?.let {
-            textView.setTextColor(ContextCompat.getColor(this, R.color.black))
+            textView.setTextColor(ContextCompat.getColor(this, R.color.black))  // 🔥 Force black color
+            textView.paint.isUnderlineText = false
             textView.setOnClickListener { openContactIntent(prefix, contactInfo) }
         }
     }
@@ -151,14 +139,12 @@ class GuardianDetails : AppCompatActivity() {
             return
         }
 
-        // Show the loader
         binding.qrLoading.visibility = View.VISIBLE
 
         lifecycleScope.launch(Dispatchers.IO) {
             val qrCodeBitmap = decodeBase64ToBitmap(qrCodeBase64)
 
             withContext(Dispatchers.Main) {
-                // Hide loader once done
                 binding.qrLoading.visibility = View.GONE
 
                 if (qrCodeBitmap != null) {
@@ -178,6 +164,22 @@ class GuardianDetails : AppCompatActivity() {
         } catch (e: IllegalArgumentException) {
             Log.e("GuardianDetails", "Error decoding Base64: ${e.message}")
             null
+        }
+    }
+
+    private fun formatCNIC(cnic: String?): String {
+        return if (!cnic.isNullOrEmpty() && cnic.length == 13) {
+            "${cnic.substring(0, 5)}-${cnic.substring(5, 12)}-${cnic.substring(12)}"
+        } else {
+            cnic ?: ""
+        }
+    }
+
+    private fun formatPhoneNumber(number: String?): String {
+        return if (!number.isNullOrEmpty() && number.length == 11 && number.startsWith("03")) {
+            "${number.substring(0, 4)}-${number.substring(4)}"
+        } else {
+            number ?: ""
         }
     }
 

@@ -2,21 +2,21 @@ package com.finallab.smartschoolpickupsystem.DataModels
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.google.common.base.Converter
 
 @Entity
-data class Student (
-    @PrimaryKey(autoGenerate = true)@ColumnInfo(name = "studentID")
+data class Student(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "studentID")
     var studentID: Int = 0,
-    var Sname: String,
-    var reg: String,
-    var studentClass: String,
-    var section: String,
-    var userId: String,
-    var studentDocId: String = "",
-    var gCNIC : String =""
+
+    var Sname: String = "",
+    var reg: String = "",
+    var studentClass: String = "",
+    var section: String = "",
+    var userId: String = "",              // added by logged-in school
+    var studentDocId: String = ""         // Firestore document ID
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(

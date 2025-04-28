@@ -31,6 +31,7 @@ class RecyclerViewAdapter(
     private val items: MutableList<Any>,
     private val lifecycleScope: CoroutineScope,
     private val listener: OnItemDeletedListener? = null,
+    private var isLoading: Boolean = false,
 
     private val onDeleteClick: ((Guardian) -> Unit)? = null
 
@@ -64,13 +65,19 @@ class RecyclerViewAdapter(
         }
     }
 
-    fun updateData(newData: MutableList<Any>?) {
-        items.clear()
-        newData?.let { items.addAll(it) }
+    fun updateData(newData: MutableList<Any>?, isLoading: Boolean = false) {
+        this.isLoading = isLoading // Update the loading flag
+        items.clear() // Clear current data
 
-
-        notifyDataSetChanged()
+        if (isLoading) {
+            // Notify RecyclerView to show a loading state
+            notifyItemInserted(items.size)
+        } else {
+            newData?.let { items.addAll(it) }
+            notifyDataSetChanged() // Notify when data is updated
+        }
     }
+
 
     // --- Student Binding ---
     private fun bindStudent(holder: StudentViewHolder, position: Int) {
@@ -96,6 +103,8 @@ class RecyclerViewAdapter(
 
             val intent = Intent(holder.itemView.context, StudentDetails::class.java).apply {
                 putExtra("id", student.studentID)
+                putExtra("studentDocumentID", student.studentDocId)
+
             }
             holder.itemView.context.startActivity(intent)
         }

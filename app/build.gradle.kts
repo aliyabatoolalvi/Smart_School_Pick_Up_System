@@ -21,6 +21,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders["MAILJET_API_KEY"] = project.properties["MAILJET_API_KEY"] as? String ?: ""
+        manifestPlaceholders["MAILJET_SECRET_KEY"] = project.properties["MAILJET_SECRET_KEY"] as? String ?: ""
+
     }
 
     buildTypes {
@@ -61,6 +65,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-auth:21.0.0")
@@ -83,6 +91,8 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.mailjet:mailjet-client:5.2.3")
 
 
     testImplementation("junit:junit:4.13.2")

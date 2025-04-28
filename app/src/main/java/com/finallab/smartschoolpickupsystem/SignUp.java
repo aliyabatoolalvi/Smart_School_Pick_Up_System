@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SignUp extends AppCompatActivity {
-    private EditText emailEditText, passwordEditText, schoolNameEditText, schoolAddressEditText;
+    private TextInputEditText emailEditText, passwordEditText, schoolNameEditText, schoolAddressEditText;
     private TextView loginLink;
     private Button signUpButton;
     private FirebaseAuth mAuth;
@@ -85,9 +86,11 @@ public class SignUp extends AppCompatActivity {
                                     if (user != null) {
                                         String userId = user.getUid();
                                         Map<String, Object> userData = new HashMap<>();
-                                        userData.put("email", email);
+                                        userData.put("schoolEmail", email);
                                         userData.put("schoolName", schoolName);
                                         userData.put("schoolAddress", schoolAddress);
+                                        userData.put("role","schoolAdmin");
+                                        userData.put("userId",userId);
 
                                         db.collection("users").document(userId)
                                                 .set(userData)

@@ -16,5 +16,25 @@
 
     <color name="field_bg">#0099FF</color>
 
+    <color name="text_field_text">#FFFFFF</color> <!-- White for Dark Mode -->
+    <color name="text_field_hint">#80FFFFFF</color> <!-- Faded white for hint -->
+
+
+    <color name="form_bg">#f9f9f9</color>
+    <color name="input_text">#212121</color>
+    <color name="input_hint">#757575</color>
+    <color name="input_stroke">#B0BEC5</color>
+
+    <color name="tint">@color/card</color>
+    <color name="card">@color/white_bg</color>
+
+    <color name="cardfield_bg">#995AA9E6</color>
+    <color name="menuItem">@color/background_color</color>
+
+
+
+
+
+
 
 </resources>

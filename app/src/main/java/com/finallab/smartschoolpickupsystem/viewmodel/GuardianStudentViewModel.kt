@@ -19,10 +19,31 @@ class GuardianStudentViewModel(private val repository: GuardianStudentRepository
     val students: StateFlow<List<Student>> = repository.getAllStudents()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // ✅ Insert Guardian
+    // ✅ Insert/Update Guardian
+    fun insertOrUpdateGuardian(guardian: Guardian) {
+        viewModelScope.launch {
+            repository.insertOrUpdateGuardian(guardian)
+        }
+    }
+
+    // ✅ Insert/Update Student
+    fun insertOrUpdateStudent(student: Student) {
+        viewModelScope.launch {
+            repository.insertOrUpdateStudent(student)
+        }
+    }
+
+    // ✅ Insert Guardian (for AddGuardian Activity)
     fun insertGuardian(guardian: Guardian) {
         viewModelScope.launch {
             repository.insertGuardian(guardian)
+        }
+    }
+
+    // ✅ Insert Student (for AddStudent Activity)
+    fun insertStudent(student: Student) {
+        viewModelScope.launch {
+            repository.insertStudent(student)
         }
     }
 
@@ -33,24 +54,17 @@ class GuardianStudentViewModel(private val repository: GuardianStudentRepository
         }
     }
 
-    // ✅ Update Guardian
-    fun updateGuardian(guardian: Guardian) {
-        viewModelScope.launch {
-            repository.updateGuardian(guardian)
-        }
-    }
-
-    // ✅ Insert Student
-    fun insertStudent(student: Student) {
-        viewModelScope.launch {
-            repository.insertStudent(student)
-        }
-    }
-
     // ✅ Delete Student
     fun deleteStudent(student: Student) {
         viewModelScope.launch {
             repository.deleteStudent(student)
+        }
+    }
+
+    // ✅ Update Guardian
+    fun updateGuardian(guardian: Guardian) {
+        viewModelScope.launch {
+            repository.updateGuardian(guardian)
         }
     }
 
@@ -61,30 +75,18 @@ class GuardianStudentViewModel(private val repository: GuardianStudentRepository
         }
     }
 
-    // ✅ Sync Data from Firestore to Room
-    fun syncDataFromFirestore() {
+    // ✅ SYNC all Data (both Guardians and Students)
+    fun syncAllData() {
         viewModelScope.launch {
-            repository.syncGuardiansFromFirestore()
-            repository.syncStudentsFromFirestore()
+            repository.syncAllDataFromFirestore()
         }
     }
 
-    fun insertOrUpdateGuardian(guardian: Guardian) {
-        viewModelScope.launch {
-            repository.insertOrUpdateGuardian(guardian)
-        }
-    }
-
-    fun insertOrUpdateStudent(student: Student) {
-        viewModelScope.launch {
-            repository.insertOrUpdateStudent(student)
-        }
-    }
+    // ✅ Get Guardians by Logged-in School UserId
     suspend fun getGuardiansByUserId(userId: String): List<Guardian> {
-           return  repository.getGuardiansByUserId(userId)
+        return repository.getGuardiansByUserId(userId)
     }
 }
-
 
 // ✅ ViewModel Factory (for constructor injection)
 class GuardianStudentViewModelFactory(private val repository: GuardianStudentRepository) : ViewModelProvider.Factory {

@@ -229,16 +229,29 @@
                     app:tint="@color/black"
                     android:layout_marginEnd="8dp"/>
 
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="0dp">
+
+
+                    <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:autoLink="email"
                     android:clickable="true"
                     android:focusable="true"
-                    android:text="batool@gmail.com"
-                    android:textColor="@color/dark_bg"
-                    android:textSize="18sp"/>
+
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>

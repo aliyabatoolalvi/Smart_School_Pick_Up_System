@@ -14,5 +14,6 @@
         <!-- Customize your theme here. -->
         <item name="android:textColorLink">#304FFE</item>
 
+
     </style>
 </resources>

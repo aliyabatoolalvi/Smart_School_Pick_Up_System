@@ -77,7 +77,7 @@ public class ProfileFragment extends Fragment implements OnStudentDeletedListene
                     if (documentSnapshot.exists()) {
 
                         String name = documentSnapshot.getString("schoolName");
-                        String email = documentSnapshot.getString("email");
+                        String email = documentSnapshot.getString("schoolEmail");
                         String address = documentSnapshot.getString("schoolAddress");  // Fetching the address
 
                         textViewName.setText(name);

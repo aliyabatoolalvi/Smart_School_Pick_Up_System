@@ -1,253 +1,164 @@
-//package com.finallab.smartschoolpickupsystem.Activities
-//
-//import android.content.Intent
-//import android.os.Bundle
-//import android.util.Log
-//import android.view.View
-//import android.widget.Toast
-//import androidx.appcompat.app.AppCompatActivity
-//import androidx.lifecycle.lifecycleScope
-//import androidx.recyclerview.widget.LinearLayoutManager
-//import com.finallab.smartschoolpickupsystem.DataModels.Student
-//import com.finallab.smartschoolpickupsystem.OnStudentDeletedListener
-//import com.finallab.smartschoolpickupsystem.Recycler.OnItemDeletedListener
-//import com.finallab.smartschoolpickupsystem.Recycler.RecyclerViewAdapter
-//import com.finallab.smartschoolpickupsystem.Room.AppDatabase
-//import com.finallab.smartschoolpickupsystem.databinding.ActivityMainBinding
-//import com.google.firebase.auth.FirebaseAuth
-//import com.google.firebase.firestore.FirebaseFirestore
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.launch
-//import kotlinx.coroutines.withContext
-//
-//class MainActivity : AppCompatActivity(), OnItemDeletedListener {
-//    private lateinit var binding: ActivityMainBinding
-//    private lateinit var adapter: RecyclerViewAdapter
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//
-//        setupRecyclerView()
-//
-//        binding.addS.setOnClickListener {
-//            startActivity(Intent(this, AddStudentActivity::class.java))
-//        }
-//
-//        binding.backButton.setOnClickListener {
-//            onBackPressedDispatcher.onBackPressed()
-//        }
-//
-//
-////        binding.searchInput.addTextChangedListener(object : android.text.TextWatcher {
-////            override fun afterTextChanged(s: android.text.Editable?) {
-////                val query = s.toString().trim()
-////
-////                if (query.isNotEmpty()) {
-////                    searchStudentsInRoom(query)
-////                } else {
-////                    loadStudentData()
-////                }
-////
-////            }
-////
-////            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-////            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-////        })
-//
-//
-//
-//    }
-//
-//    override fun onResume() {
-//        super.onResume()
-//        loadStudentData()
-//    }
-//
-//    private fun setupRecyclerView() {
-//        adapter = RecyclerViewAdapter(mutableListOf(), lifecycleScope, this)
-//        binding.recyclerview.layoutManager = LinearLayoutManager(this)
-//        binding.recyclerview.adapter = adapter
-//    }
-//
-//    private fun loadStudentData() {
-//        val userId = FirebaseAuth.getInstance().currentUser?.uid
-//        if (userId != null) {
-//            lifecycleScope.launch {
-//                try {
-//                    val students = withContext(Dispatchers.IO) {
-//                        AppDatabase.getDatabase(this@MainActivity).studentDao().getStudentsByUserId(userId)
-//
-//                    }
-//                    Log.d("StudentData", "Loaded Students: $students")
-//
-//                    adapter.updateData(students.toMutableList())
-//
-//                    if (students.isEmpty()) {
-//                        binding.noResultsText.visibility = View.VISIBLE
-//                    } else {
-//                        binding.noResultsText.visibility = View.GONE
-//                    }
-//
-//
-//                } catch (e: Exception) {
-//                    Toast.makeText(this@MainActivity, "Error loading students: ${e.message}", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//        } else {
-//            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
-//        }
-//    }
-//
-////    private fun searchStudents(query: String) {
-////        val userId = FirebaseAuth.getInstance().currentUser?.uid
-////        if (userId != null) {
-////            val firestore = FirebaseFirestore.getInstance()
-////            firestore.collection("students")
-////                .whereEqualTo("userId", userId)
-////                .get()
-////                .addOnSuccessListener { result ->
-////                    // Filter documents based on the search query
-////                    val filteredStudents = result.documents.mapNotNull { document ->
-////                        val name = document.getString("name")
-////                        if (name != null && name.contains(query, ignoreCase = true)) {
-////                            // Create a Student object and return it
-////                            Student(
-////                                studentID = document.getLong("studentID")?.toInt() ?: 0,
-////                                Sname = name,
-////                                reg = document.getString("reg") ?: "",
-////                                studentClass = document.getString("class") ?: "",
-////                                section = document.getString("section") ?: "",
-////                                studentDocId = document.id,
-////                                // Add the document ID for reference
-////                                userId = userId
-////                            )
-////                        } else null
-////                    }
-////
-////                    // Update the adapter's data with the filtered list
-////                    adapter.updateData(filteredStudents.toMutableList())
-////
-////                    // Show "no results" message if the list is empty
-////                    if (filteredStudents.isEmpty()) {
-////                        binding.noResultsText.visibility = View.VISIBLE
-////                    } else {
-////                        binding.noResultsText.visibility = View.GONE
-////                    }
-////
-////                }
-////                .addOnFailureListener { e ->
-////                    Toast.makeText(this@MainActivity, "Search error: ${e.message}", Toast.LENGTH_SHORT).show()
-////                }
-////        }
-////    }
-////    private fun searchStudentsInRoom(query: String) {
-////        val userId = FirebaseAuth.getInstance().currentUser?.uid
-////        if (userId != null) {
-////            lifecycleScope.launch {
-////                try {
-////                    val students = withContext(Dispatchers.IO) {
-////                        AppDatabase.getDatabase(this@MainActivity)
-////                            .studentDao()
-////                            .searchStudentsByName(userId, query)
-////                    }
-////                    adapter.updateData(students.toMutableList())
-////                    binding.noResultsText.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE
-////
-////                } catch (e: Exception) {
-////                    Toast.makeText(this@MainActivity, "Search error: ${e.message}", Toast.LENGTH_SHORT).show()
-////                }
-////            }
-////        }
-////    }
-//
-//
-//
-//    override fun onDataUpdated() {
-//        loadStudentData()
-//    }
-//}
 package com.finallab.smartschoolpickupsystem.Activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.finallab.smartschoolpickupsystem.DataModels.Student
 import com.finallab.smartschoolpickupsystem.Recycler.OnItemDeletedListener
 import com.finallab.smartschoolpickupsystem.Recycler.RecyclerViewAdapter
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
+import com.finallab.smartschoolpickupsystem.Utilities
+import com.finallab.smartschoolpickupsystem.ViewModel.GuardianStudentViewModel
+import com.finallab.smartschoolpickupsystem.ViewModel.GuardianStudentViewModelFactory
 import com.finallab.smartschoolpickupsystem.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(), OnItemDeletedListener {
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: RecyclerViewAdapter
+    private lateinit var viewModel: GuardianStudentViewModel
+    private val auth = FirebaseAuth.getInstance()
+
+
+    private val addStudentLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // New student was added ✅
+            if (Utilities.isNetworkConnected(this)) {
+                syncAllData()  // 🔥 Reload students
+            } else {
+                loadStudentDataOffline()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set up the RecyclerView
         setupRecyclerView()
+        setupClickListeners()
 
-        // Navigate to AddStudentActivity
-        binding.addS.setOnClickListener {
-            startActivity(Intent(this, AddStudentActivity::class.java))
+        viewModel = GuardianStudentViewModelFactory(
+            com.finallab.smartschoolpickupsystem.model.Repository.GuardianStudentRepository(
+                AppDatabase.getDatabase(this)
+            )
+        ).create(GuardianStudentViewModel::class.java)
+
+        // Sync or Load based on Internet
+        if (Utilities.isNetworkConnected(this)) {
+            syncAllData()
+        } else {
+            Utilities.showNotConnectedSnack(binding.root, this)
+            loadStudentDataOffline()
         }
 
-        // Handle the back button
-        binding.backButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed() // Updated for modern APIs
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            if (Utilities.isNetworkConnected(this)) {
+                syncAllData()
+            } else {
+                Utilities.showNotConnectedSnack(binding.root, this)
+                loadStudentDataOffline()
+            }
+
+            // Important! Stop the refreshing spinner
+            binding.swipeRefreshLayout.isRefreshing = false
         }
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        loadStudentData()
     }
 
     private fun setupRecyclerView() {
-        adapter = RecyclerViewAdapter(mutableListOf(), lifecycleScope, this)
-        binding.recyclerview.layoutManager = LinearLayoutManager(this)
-        binding.recyclerview.adapter = adapter
-    }
-
-    private fun loadStudentData() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId != null) {
-            lifecycleScope.launch {
-                try {
-                    // Fetch student data in the background
-                    val students = withContext(Dispatchers.IO) {
-                        AppDatabase.getDatabase(this@MainActivity).studentDao().getStudentsByUserId(userId)
-
-                    }
-                    Log.d("StudentData", "Loaded Students: $students")
-
-                    // Update the adapter with new data
-                    adapter.updateData(students.toMutableList())
-
-                } catch (e: Exception) {
-                    Toast.makeText(this@MainActivity, "Error loading students: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        } else {
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+        adapter = RecyclerViewAdapter(
+            items = mutableListOf(),
+            lifecycleScope = lifecycleScope,
+            listener = this
+        )
+        binding.recyclerview.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = this@MainActivity.adapter
+            setHasFixedSize(true)
         }
     }
 
+    private fun setupClickListeners() {
+        binding.addS.setOnClickListener {
+            val intent = Intent(this, AddStudentActivity::class.java)
+            addStudentLauncher.launch(intent)
+        }
 
+        binding.backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
+    private fun syncAllData() {
+        binding.progressBar.visibility = View.VISIBLE
+
+        viewModel.syncAllData()
+
+        lifecycleScope.launch {
+            delay(1500) // Small delay to ensure Room is updated after Firestore
+            loadStudentDataOffline()
+            showToast("Synced Successfully!")
+        }
+    }
+
+    private fun loadStudentDataOffline() {
+        val userId = auth.currentUser?.uid ?: run {
+            showToast("User not logged in")
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val students = AppDatabase.getDatabase(this@MainActivity)
+                .studentDao()
+                .getStudentsByUserId(userId)
+
+            withContext(Dispatchers.Main) {
+                if (students.isNotEmpty()) {
+                    updateRecyclerView(students)
+                } else {
+                    showEmptyState()
+                }
+            }
+        }
+    }
+
+    private fun updateRecyclerView(students: List<Student>) {
+        adapter.updateData(students.toMutableList())
+        binding.progressBar.visibility = View.GONE
+        binding.emptyStateView.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun showEmptyState() {
+        binding.progressBar.visibility = View.GONE
+        binding.emptyStateView.visibility = View.VISIBLE
+        adapter.updateData(mutableListOf())
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 
     override fun onDataUpdated() {
-        loadStudentData()
+        if (Utilities.isNetworkConnected(this)) {
+            syncAllData()
+        } else {
+            Utilities.showNotConnectedSnack(binding.root, this)
+            loadStudentDataOffline()
+            showToast("Loaded from Cache")
+        }
     }
 }

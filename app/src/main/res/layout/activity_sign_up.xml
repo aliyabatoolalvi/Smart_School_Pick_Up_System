@@ -6,163 +6,195 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignUp">
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        >
 
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            app:srcCompat="@drawable/school1" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="100dp"
-            android:text="SignUp"
-            android:textColor="@android:color/white"
-            android:textSize="50dp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:id="@+id/forms"
-            android:layout_width="600dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_below="@id/title"
-            android:layout_marginTop="50dp"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/form_background_light"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <EditText
-                android:id="@+id/schoolName"
+            <ImageView
+                android:id="@+id/imageView5"
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/editbg"
-                android:hint="School Name"
-                android:inputType="text"
-                android:maxLines="1"
-                android:maxLength="50"
-                android:textColor="@color/white"
-                android:padding="10dp"
-                android:textColorHint="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/schoolAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="65dp"
-                android:maxLines="3"
-                android:maxLength="100"
-                android:scrollbars="vertical"
-                android:textColor="@color/white"
-
-                android:layout_marginTop="15dp"
-                android:background="@drawable/editbg"
-                android:hint="School Address"
-                android:inputType="textPostalAddress|textMultiLine"
-                android:padding="10dp"
-                android:textColorHint="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/email1"
-                android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/editbg"
-                android:hint="Email"
-                android:inputType="textEmailAddress"
-                android:maxLength="50"
-                android:maxLines="1"
-                android:textColor="@color/white"
-
-                android:padding="10dp"
-                android:textColorHint="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <!-- Password EditText -->
-            <EditText
-                android:id="@+id/password1"
-                android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/editbg"
-                android:hint="Password"
-                android:textColor="@color/white"
-
-                android:inputType="textPassword"
-                android:maxLength="20"
-                android:padding="10dp"
-                android:textColorHint="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/school1" />
 
             <TextView
-                android:id="@+id/loginLink"
+                android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Already have an account? Login"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="100dp"
+                android:text="SignUp"
                 android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp"
-                android:clickable="true"
-                android:focusable="true" />
+                android:textSize="50dp"
+                android:textStyle="bold" />
 
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/forms"
+                android:layout_width="600dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_below="@id/title"
+                android:layout_marginTop="50dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/form_background_light"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-        <Button
-            android:id="@+id/Signup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#0090E9"
-            android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
-            android:text="Signup"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            android:layout_below="@id/forms"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
-            app:background="@drawable/button_blue" />
+                <!-- School Name -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/WhiteTextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="outline"
+                    app:boxStrokeColor="@color/white_bg"
 
-        <ProgressBar
-            android:id="@+id/progressSign"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:layout_margin="20dp"
-            android:indeterminateTint="@color/field_bg"
-            android:visibility="gone"
-            android:layout_below="@id/Signup"
-            android:layout_centerHorizontal="true"
-            />
+                    app:boxCornerRadiusTopStart="8dp"
+                    app:boxCornerRadiusTopEnd="8dp"
+                    app:boxCornerRadiusBottomStart="8dp"
+                    app:boxCornerRadiusBottomEnd="8dp">
 
-    </RelativeLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/schoolName"
+                        android:layout_width="match_parent"
+                        android:layout_height="65dp"
+                        android:hint="School Name"
+                        android:textColorHint="@color/text_field_text"
+                        android:textColor="@color/text_field_text"
+
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:maxLength="50"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- School Address -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    style="@style/WhiteTextInput"
+                    app:boxStrokeColor="@color/white_bg"
+
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/schoolAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="65dp"
+                        android:maxLines="3"
+                        android:maxLength="100"
+                        android:hint="School Address"
+                        android:inputType="textPostalAddress|textMultiLine"
+                        android:textColor="@color/text_field_text"
+        android:textColorHint="@color/text_field_text"
+
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Email -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/WhiteTextInput"
+                    app:boxStrokeColor="@color/white_bg"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email1"
+                        android:layout_width="match_parent"
+                        android:layout_height="65dp"
+                        android:hint="Email"
+                        android:inputType="textEmailAddress"
+                        android:maxLength="50"
+                        android:maxLines="1"
+                        android:textColor="@color/text_field_text"
+        android:textColorHint="@color/text_field_text"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Password with Toggle -->
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/WhiteTextInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    app:endIconMode="password_toggle"
+                    app:boxStrokeColor="@color/white_bg"
+                    app:boxBackgroundMode="outline">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/password1"
+                        android:layout_width="match_parent"
+                        android:layout_height="65dp"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:maxLength="20"
+                        android:textColor="@color/text_field_text"
+                        android:textColorHint="@color/text_field_text"
+                        
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/loginLink"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Already have an account? Login"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/Signup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#0090E9"
+                android:drawableRight="@drawable/baseline_keyboard_arrow_right_24"
+                android:paddingStart="40dp"
+                android:paddingEnd="40dp"
+                android:text="Signup"
+                android:textAllCaps="true"
+                android:textStyle="bold"
+                android:layout_below="@id/forms"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                app:background="@drawable/button_blue" />
+
+            <ProgressBar
+                android:id="@+id/progressSign"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:layout_margin="20dp"
+                android:indeterminateTint="@color/field_bg"
+                android:visibility="gone"
+                android:layout_below="@id/Signup"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

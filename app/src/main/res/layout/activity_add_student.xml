@@ -82,7 +82,7 @@
                 android:id="@+id/regS"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="54dp"
+                android:layout_marginTop="30dp"
                 android:backgroundTint="#FFFFFF"
                 android:text="Register Student"
                 android:textColor="#020202"
@@ -102,7 +102,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="16dp"
                 app:cardCornerRadius="15dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -112,7 +112,9 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#5E03A9F4">
+                    android:background="@color/cardfield_bg"
+                    android:paddingVertical="20dp"
+                    >
 
                     <ImageView
                         android:id="@+id/imageView7"
@@ -132,9 +134,8 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
-
                         android:hint="Student Name"
-                        android:background="@color/white_bg"
+                        style="@style/WhiteTextInput"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/imageView7">
@@ -143,11 +144,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:maxLines="1"
-                            android:background="@drawable/editbg"
-                            android:inputType="textCapWords"/>
+                            android:inputType="textCapWords" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-<!--                    <com.google.android.material.textfield.TextInputLayout-->
+                    <!--                    <com.google.android.material.textfield.TextInputLayout-->
 <!--                        android:id="@+id/stuclass"-->
 <!--                        android:layout_width="0dp"-->
 <!--                        android:layout_height="wrap_content"-->
@@ -167,97 +167,88 @@
 <!--                            android:background="@drawable/editbg"-->
 <!--                            android:inputType="text"/>-->
 <!--                    </com.google.android.material.textfield.TextInputLayout>-->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/classDropdownLayout"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="16dp"
-                            android:hint="Select Class"
-                            android:paddingHorizontal="15dp"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/classDropdownLayout"
+                        style="@style/WhiteTextInput"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:hint="Select Class"
+                        app:endIconMode="dropdown_menu"
+                        app:layout_constraintTop_toBottomOf="@id/namestudent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
 
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:background="@color/white"
-                            app:endIconMode="dropdown_menu"
-                            app:layout_constraintTop_toBottomOf="@+id/namestudent">
-
-                            <AutoCompleteTextView
-                                android:id="@+id/stuClass"
-                                android:layout_width="match_parent"
-                                android:layout_height="50dp"
-                                android:inputType="none"
-                                android:focusable="false"
-                                android:background="@drawable/editbg"
-                                />
-                        </com.google.android.material.textfield.TextInputLayout>
+                        <AutoCompleteTextView
+                            android:id="@+id/stuClass"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:inputType="none"
+                            android:padding="10dp"
+                            android:focusable="false" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/secstu"
+                        style="@style/WhiteTextInput"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
                         android:hint="Section"
-                        android:background="@color/white_bg"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/classDropdownLayout"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/classDropdownLayout">
+                        app:layout_constraintEnd_toEndOf="parent">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:maxLines="1"
-
-                            android:background="@drawable/editbg"
-                            android:inputType="textCapWords"/>
+                            android:inputType="textCapCharacters"
+                            android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/rollnostu"
+                        style="@style/WhiteTextInput"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
                         android:hint="Roll No"
-                        android:background="@color/white_bg"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/secstu"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/secstu"
-
-                        >
+                        app:layout_constraintEnd_toEndOf="parent">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:maxLines="1"
-                            android:background="@drawable/editbg"
-                            android:inputType="text"/>
+                            android:inputType="number"
+                            android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/parentDropdownLayout"
+                        style="@style/WhiteTextInput"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
-                        android:background="@color/white"
                         android:hint="Select Guardian"
                         app:endIconMode="dropdown_menu"
-                        app:hintEnabled="true"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/rollnostu"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/rollnostu">
+                        app:layout_constraintEnd_toEndOf="parent">
 
                         <AutoCompleteTextView
                             android:id="@+id/gdropdown"
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
-                            android:background="@drawable/editbg"
                             android:inputType="none"
-                            android:focusable="false"
-                             />
+                            android:padding="10dp"
+
+                            android:focusable="false" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
@@ -266,8 +257,8 @@
                         android:layout_height="wrap_content"
                         android:text="Add New Guardian"
                         android:layout_marginTop="8dp"
-                        android:visibility="gone"
-
+                        android:visibility="visible"
+                        android:backgroundTint="@color/dark_bg"
                         app:layout_constraintTop_toBottomOf="@+id/parentDropdownLayout"
                         app:layout_constraintEnd_toEndOf="@+id/parentDropdownLayout" />
 

@@ -1,40 +1,51 @@
 package com.finallab.smartschoolpickupsystem
 
-import java.util.*
-import javax.mail.*
-import javax.mail.internet.InternetAddress
-import javax.mail.internet.MimeMessage
+import okhttp3.*
+import org.json.JSONObject
+import java.io.IOException
+import okhttp3.MediaType.Companion.toMediaType
 
-class EmailSender(private val email: String, private val password: String) : Thread() {
 
-    private val host = "smtp.gmail.com"
+class EmailSender(private val apiKey: String, private val apiSecret: String) {
 
-    fun sendEmail(to: String, subject: String, message: String) {
-        val props = Properties().apply {
-            put("mail.smtp.host", host)
-            put("mail.smtp.port", "587")
-            put("mail.smtp.auth", "true")
-            put("mail.smtp.starttls.enable", "true")
+    fun sendEmail(to: String, subject: String, message: String, callback: (Boolean, String?) -> Unit) {
+        val client = OkHttpClient()
+
+        val json = JSONObject().apply {
+            put("Messages", listOf(JSONObject().apply {
+                put("From", JSONObject().apply {
+                    put("Email", "alvialiyabatool@gmail.com")
+                    put("Name", "Smart School Pick Up System")
+                })
+                put("To", listOf(JSONObject().apply {
+                    put("Email", to)
+                    put("Name", "Recipient")
+                }))
+                put("Subject", subject)
+                put("TextPart", message)
+            }))
         }
 
-        val session = Session.getInstance(props, object : Authenticator() {
-            override fun getPasswordAuthentication(): PasswordAuthentication {
-                return PasswordAuthentication(email, password)
+        val body = RequestBody.create("application/json".toMediaType(), json.toString())
+        val request = Request.Builder()
+            .url("https://api.mailjet.com/v3.1/send")
+            .post(body)
+            .addHeader("Authorization", Credentials.basic(apiKey, apiSecret))
+            .addHeader("Content-Type", "application/json")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                callback(false, e.message)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    callback(true, null)
+                } else {
+                    callback(false, response.body?.string())
+                }
             }
         })
-
-        try {
-            val mimeMessage = MimeMessage(session).apply {
-                setFrom(InternetAddress(email))
-                addRecipient(Message.RecipientType.TO, InternetAddress(to))
-                this.subject = subject
-                setText(message)
-            }
-
-            Transport.send(mimeMessage)
-            println("Email sent successfully")
-        } catch (e: MessagingException) {
-            e.printStackTrace()
-        }
     }
 }
