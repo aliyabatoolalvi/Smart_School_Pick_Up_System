@@ -1,1 +1,22 @@
+# Ignore build outputs
 /build
+/app/build
+/.gradle
+/local.properties
+.idea/
+
+# Ignore API key and secrets files
+apikey.properties
+secrets.properties
+
+# Ignore generated files
+.DS_Store
+*.iml
+
+# Ignore crashlytics & firebase
+*.firebase/
+crashlytics-build.properties
+
+# Ignore Android Studio settings
+*.log
+.gradle/

@@ -2,6 +2,7 @@ package com.finallab.smartschoolpickupsystem;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -32,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private FirebaseAuth mAuth;
     private ProgressBar progress;
+    private SharedPreferences sharedPref; // ✅ SharedPreferences to store admin credentials
 
     @Override
     protected void onStart() {
@@ -56,6 +58,8 @@ public class LoginActivity extends AppCompatActivity {
         registersign = findViewById(R.id.registersign);
         forgotpassword = findViewById(R.id.forgot);
 
+        sharedPref = getSharedPreferences("AdminPrefs", MODE_PRIVATE); // ✅ Initialize SharedPreferences
+
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
@@ -74,8 +78,16 @@ public class LoginActivity extends AppCompatActivity {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(LoginActivity.this, task -> {
                         if (task.isSuccessful()) {
+                            // ✅ Save Admin Email and Password after successful login
+                            sharedPref.edit()
+                                    .putString("admin_email", email)
+                                    .putString("admin_password", password)
+                                    .apply();
+
                             // Login successful, now check user role
                             checkUserRoleAndRedirect();
+
+
                         } else {
                             progress.setVisibility(View.GONE);
                             Utilities.showErrorSnack(findViewById(android.R.id.content),
@@ -119,25 +131,27 @@ public class LoginActivity extends AppCompatActivity {
                     if (document.exists()) {
                         String role = document.getString("role");
 
-                        Intent intent;
                         if (role != null) {
+                            SharedPreferences sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                            sharedPref.edit().putString("user_role", role).apply();
+
+                            Intent intent;
                             switch (role) {
                                 case "schoolAdmin":
                                     intent = new Intent(LoginActivity.this, HomeActivity.class);
                                     startActivity(intent);
-
                                     break;
                                 case "guardian":
-                                    //intent = new Intent(LoginActivity.this, GuardianDashboardActivity.class);
+                                    // intent = new Intent(LoginActivity.this, GuardianDashboardActivity.class);
                                     break;
                                 case "guard":
-                                    //intent = new Intent(LoginActivity.this, GuardDashboardActivity.class);
+                                    // intent = new Intent(LoginActivity.this, GuardDashboardActivity.class);
                                     break;
                                 default:
                                     Toast.makeText(this, "Invalid role.", Toast.LENGTH_SHORT).show();
+                                    mAuth.signOut();
                                     return;
                             }
-                            //startActivity(intent);
                             finish();
                         } else {
                             Toast.makeText(this, "Role not found.", Toast.LENGTH_SHORT).show();
@@ -153,4 +167,5 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error checking user role: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 }

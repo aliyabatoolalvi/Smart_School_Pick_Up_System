@@ -1,6 +1,8 @@
 package com.finallab.smartschoolpickupsystem;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -85,7 +87,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     .replace(R.id.fragment_container, new PrivacyFragment())
                     .commit();
         } else if (itemId == R.id.menulogout) {
+            SharedPreferences sharedPref = getSharedPreferences("AdminPrefs", Context.MODE_PRIVATE);
 
+            sharedPref.edit().clear().apply();
+
+            // ✅ Clear stored user role
+            SharedPreferences userPref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            userPref.edit().clear().apply();
             Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();
                 mAuth.signOut();
             Intent intent = new Intent(HomeActivity.this, LoginActivity.class);

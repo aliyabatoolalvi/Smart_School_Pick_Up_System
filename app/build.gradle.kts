@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -6,12 +8,20 @@ plugins {
     id("com.google.firebase.crashlytics")
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
+val props = Properties().apply {
+    val file = rootProject.file("apikey.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
+val mailjetKey = props["MAILJET_API_KEY"] as String
+val mailjetSecret = props["MAILJET_SECRET_KEY"] as String
 
 android {
     namespace = "com.finallab.smartschoolpickupsystem"
     compileSdk = 35
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     defaultConfig {
         applicationId = "com.finallab.smartschoolpickupsystem"
@@ -21,10 +31,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "MAILJET_API_KEY", mailjetKey)
+        buildConfigField("String", "MAILJET_SECRET_KEY", mailjetSecret)
 
-        manifestPlaceholders["MAILJET_API_KEY"] = project.properties["MAILJET_API_KEY"] as? String ?: ""
-        manifestPlaceholders["MAILJET_SECRET_KEY"] = project.properties["MAILJET_SECRET_KEY"] as? String ?: ""
+    }
 
+    secrets {
+        defaultPropertiesFileName = "secrets.properties"
     }
 
     buildTypes {

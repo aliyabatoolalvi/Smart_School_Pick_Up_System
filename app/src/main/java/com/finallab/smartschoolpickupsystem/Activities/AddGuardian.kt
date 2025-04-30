@@ -1,13 +1,16 @@
 package com.finallab.smartschoolpickupsystem.Activities
 
+import EmailSender
 import android.content.Intent
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.finallab.smartschoolpickupsystem.BuildConfig
 import com.finallab.smartschoolpickupsystem.DataModels.Guardian
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
 import com.finallab.smartschoolpickupsystem.Utilities.isNetworkConnected
@@ -59,7 +62,12 @@ class AddGuardian : AppCompatActivity() {
                                 binding.progressBar.visibility = View.GONE
                             } else {
                                 val qrData = UUID.randomUUID().toString()
-                                saveGuardian(studentDocID, qrData)
+
+                                val guardianEmail = binding.Email.editText?.text.toString()
+                                val guardianName = binding.Gname.editText?.text.toString()
+                                val generatedPassword = generateRandomPassword(8)
+
+                                createGuardianAuthAccount(studentDocID, qrData, guardianEmail, guardianName, generatedPassword)
                             }
                         } catch (e: Exception) {
                             showToast("Error checking CNIC: ${e.message}")
@@ -70,7 +78,14 @@ class AddGuardian : AppCompatActivity() {
                 }
             }
         }
+
     }
+
+    private fun generateRandomPassword(length: Int = 8): String {
+        val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#"
+        return (1..length).map { chars.random() }.joinToString("")
+    }
+
 
     private fun saveGuardian(studentDocId: String, qrData: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -209,6 +224,142 @@ class AddGuardian : AppCompatActivity() {
             ""
         }
     }
+
+    private fun createGuardianAuthAccount(
+        studentDocId: String,
+        qrData: String,
+        email: String,
+        name: String,
+        password: String
+    ) {
+        val auth = FirebaseAuth.getInstance()
+        val firestore = FirebaseFirestore.getInstance()
+
+        val sharedPref = getSharedPreferences("AdminPrefs", MODE_PRIVATE)
+        val adminEmail = sharedPref.getString("admin_email", null)
+        val adminPassword = sharedPref.getString("admin_password", null)
+
+        if (adminEmail.isNullOrEmpty() || adminPassword.isNullOrEmpty()) {
+            showToast("Admin credentials not found. Please login again.")
+            return
+        }
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener { authResult ->
+                val guardianUid = authResult.user?.uid
+                if (guardianUid != null) {
+                    FirebaseAuth.getInstance().signOut()
+
+                    FirebaseAuth.getInstance()
+                        .signInWithEmailAndPassword(adminEmail, adminPassword)
+                        .addOnSuccessListener {
+                            try {
+                                val currentUser = FirebaseAuth.getInstance().currentUser
+                                if (currentUser == null) {
+                                    showToast("Failed to re-login admin.")
+                                    return@addOnSuccessListener
+                                }
+
+                                val currentSchoolUid = currentUser.uid
+                                val guardian = Guardian(
+                                    Gname = name,
+                                    number = binding.number.editText?.text.toString(),
+                                    CNIC = binding.CNIC.editText?.text.toString(),
+                                    Email = email,
+                                    QRcodeData = qrData,
+                                    QRcodeBase64 = generateQRCodeBase64(qrData),
+                                    userId = currentSchoolUid
+                                )
+
+                                firestore.collection("guardians")
+                                    .document(guardianUid)
+                                    .set(guardian.toMap())
+                                    .addOnSuccessListener {
+                                        val userMap = mapOf(
+                                            "uid" to guardianUid,
+                                            "email" to email,
+                                            "role" to "guardian",
+                                            "schoolId" to currentSchoolUid
+                                        )
+
+                                        firestore.collection("users")
+                                            .document(guardianUid)
+                                            .set(userMap)
+                                            .addOnSuccessListener {
+                                                saveGuardianToLocalDatabase(guardian)
+                                                sendGuardianEmail(email, password)
+                                                showToast("Guardian registered successfully!")
+                                                binding.progressBar.visibility = View.GONE
+                                                finish()
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.e("Firestore", "Failed to save user info", e)
+                                                showToast("Failed to save user info: ${e.message}")
+                                                binding.progressBar.visibility = View.GONE
+                                            }
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("Firestore", "Failed to save guardian", e)
+                                        showToast("Failed to save guardian data: ${e.message}")
+                                        binding.progressBar.visibility = View.GONE
+                                    }
+                            } catch (e: Exception) {
+                                Log.e("ReLogin", "Admin re-login crash: ${e.message}", e)
+                                showToast("Unexpected error: ${e.message}")
+                            }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("ReLogin", "Firebase sign-in failed: ${e.message}", e)
+                            showToast("Admin re-login failed: ${e.message}")
+                            binding.progressBar.visibility = View.GONE
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("GuardianAccount", "Failed to create guardian: ${e.message}", e)
+                if (e.message?.contains("email address is already in use") == true) {
+                    showToast("Guardian email is already registered!")
+                } else {
+                    showToast("Failed to create Guardian account: ${e.message}")
+                }
+                binding.progressBar.visibility = View.GONE
+            }
+    }
+
+
+    private fun sendGuardianEmail(email: String, password: String) {
+        val sender = EmailSender(BuildConfig.MAILJET_API_KEY, BuildConfig.MAILJET_SECRET_KEY)
+
+        val subject = "Smart School Pickup - Your Login Credentials"
+        val message = """
+        Dear Guardian,
+
+        Your account has been created successfully.
+
+        Here are your login details:
+
+        Email: $email
+        Password: $password
+
+        Please keep this information safe.
+
+        Regards,
+        Smart School Pickup Team
+    """.trimIndent()
+
+        sender.sendEmail(email, subject, message) { success, error ->
+            runOnUiThread {
+                if (success) {
+                    Toast.makeText(this, "Email sent successfully!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("MailjetEmail", "Failed to send email: $error")
+                    Toast.makeText(this, "Failed to send email: $error", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+
 
     private fun showToast(message: String) {
         runOnUiThread {

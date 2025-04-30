@@ -1,7 +1,10 @@
 package com.finallab.smartschoolpickupsystem;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +55,16 @@ public class ProfileFragment extends Fragment implements OnStudentDeletedListene
 
 
         logoutButton.setOnClickListener(v -> {
+
+            SharedPreferences sharedPref = requireActivity().getSharedPreferences("AdminPrefs", Context.MODE_PRIVATE);
+
+            sharedPref.edit().clear().apply();
+
+            // ✅ Clear stored user role
+            SharedPreferences userPref = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            userPref.edit().clear().apply();
+
+            // ✅ Sign out from FirebaseAuth
             mAuth.signOut();
             Intent intent = new Intent(requireActivity(), LoginActivity.class);
             startActivity(intent);
