@@ -2,8 +2,13 @@ package com.finallab.smartschoolpickupsystem.Activities
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.widget.doOnTextChanged
+
 
 class MainActivity : AppCompatActivity(), OnItemDeletedListener {
 
@@ -28,15 +35,15 @@ class MainActivity : AppCompatActivity(), OnItemDeletedListener {
     private lateinit var adapter: RecyclerViewAdapter
     private lateinit var viewModel: GuardianStudentViewModel
     private val auth = FirebaseAuth.getInstance()
-
+    private lateinit var searchBar: AutoCompleteTextView
+    private var fullStudentList: List<Student> = listOf()
 
     private val addStudentLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            // New student was added ✅
             if (Utilities.isNetworkConnected(this)) {
-                syncAllData()  // 🔥 Reload students
+                syncAllData()
             } else {
                 loadStudentDataOffline()
             }
@@ -57,7 +64,6 @@ class MainActivity : AppCompatActivity(), OnItemDeletedListener {
             )
         ).create(GuardianStudentViewModel::class.java)
 
-        // Sync or Load based on Internet
         if (Utilities.isNetworkConnected(this)) {
             syncAllData()
         } else {
@@ -76,7 +82,46 @@ class MainActivity : AppCompatActivity(), OnItemDeletedListener {
             // Important! Stop the refreshing spinner
             binding.swipeRefreshLayout.isRefreshing = false
         }
+        searchBar = binding.searchBar
 
+        searchBar.doOnTextChanged { text, _, _, _ ->
+            val query = text?.toString()?.trim()?.lowercase() ?: ""
+            applySearchFilter(query)
+            if (query.isEmpty()) unfocusSearchBar()
+
+        }
+    }
+    private fun applySearchFilter(query: String) {
+        val filtered = fullStudentList.filter { student ->
+            student.Sname.lowercase().contains(query) ||
+                    student.studentClass.lowercase().contains(query) ||
+                    student.section.lowercase().contains(query)
+        }
+        adapter.updateData(filtered.toMutableList())
+    }
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v = currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    v.clearFocus()
+
+                    binding.searchBarLayout.isHintEnabled = false
+                    binding.searchBarLayout.isHintEnabled = true
+
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(v.windowToken, 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+    private fun unfocusSearchBar() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.searchBar.windowToken, 0)
+        binding.searchBar.clearFocus()
     }
 
     private fun setupRecyclerView() {
@@ -135,12 +180,13 @@ class MainActivity : AppCompatActivity(), OnItemDeletedListener {
             }
         }
     }
-
     private fun updateRecyclerView(students: List<Student>) {
-        adapter.updateData(students.toMutableList())
+        fullStudentList = students
+        applySearchFilter(binding.searchBar.text.toString().trim().lowercase())
         binding.progressBar.visibility = View.GONE
         binding.emptyStateView.visibility = if (students.isEmpty()) View.VISIBLE else View.GONE
     }
+
 
     private fun showEmptyState() {
         binding.progressBar.visibility = View.GONE
@@ -161,4 +207,5 @@ class MainActivity : AppCompatActivity(), OnItemDeletedListener {
             showToast("Loaded from Cache")
         }
     }
+
 }

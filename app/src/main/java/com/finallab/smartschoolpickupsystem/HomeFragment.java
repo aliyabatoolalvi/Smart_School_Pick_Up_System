@@ -2,6 +2,7 @@ package com.finallab.smartschoolpickupsystem;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.finallab.smartschoolpickupsystem.Activities.AddGuardian;
 import com.finallab.smartschoolpickupsystem.Activities.AddStudentActivity;
 import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -26,8 +29,12 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private ViewPager2 viewPager;
-    private Button listStudentsButton, addStudentButton, showUserID;
+    private Button listStudentsButton, manageGuardian, showUserID;
     private TextView navigationText;
+
+    private Handler carouselHandler = new Handler();
+    private Runnable carouselRunnable;
+    private int currentIndex = 0;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -48,13 +55,19 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewPager = view.findViewById(R.id.viewPager);
-        listStudentsButton = view.findViewById(R.id.listStudentsButton);
-        addStudentButton = view.findViewById(R.id.addStudentButton);
-        navigationText = view.findViewById(R.id.navigationText);
-        showUserID = view.findViewById(R.id.showuid);
 
-        navigationText.setText("Welcome! Use the buttons below to manage students or enjoy the carousel.");
+        MaterialButton manageStudentsBtn = view.findViewById(R.id.manageStudentsBtn);
+        MaterialButton manageGuardiansBtn = view.findViewById(R.id.manageGuardiansBtn);
+        MaterialButton reportsBtn = view.findViewById(R.id.reportbtn);
+        MaterialButton feedbackBtn = view.findViewById(R.id.feedbackBtn);
+        MaterialButton schoolProfileBtn = view.findViewById(R.id.schoolprofile);
+
+        viewPager = view.findViewById(R.id.viewPager);
+        listStudentsButton = view.findViewById(R.id.manageStudentsBtn);
+        manageGuardian = view.findViewById(R.id.manageGuardiansBtn);
+        showUserID = view.findViewById(R.id.schoolprofile);
+
+//        navigationText.setText("Welcome! Use the buttons below to manage students or enjoy the carousel.");
 
         setupCarousel();
 
@@ -63,8 +76,8 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
         });
 
-        addStudentButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), AddStudentActivity.class);
+        manageGuardian.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AddGuardian.class);
             startActivity(intent);
         });
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -73,23 +86,60 @@ public class HomeFragment extends Fragment {
 
         // Handle showUserID click
         showUserID.setOnClickListener(v -> {
-            if (userId != null) {
-                Toast.makeText(requireContext(), userId + " is the user ID of the current school", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(requireContext(), "No user is logged in", Toast.LENGTH_SHORT).show();
-            }
+            Fragment profileFragment = new ProfileFragment();
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, profileFragment)
+                    .addToBackStack(null)
+                    .commit();
+
         });
     }
     private void setupCarousel() {
         List<Integer> images = new ArrayList<>();
-        images.add(R.drawable.rushhourschool); // Replace with your actual drawable resource IDs
+        images.add(R.drawable.rushhourschool);
         images.add(R.drawable.titleimage);
         images.add(R.drawable.lineongate);
         images.add(R.drawable.qrbanner);
         images.add(R.drawable.rushhourschool2);
 
-
         CarouselAdaptor adapter = new CarouselAdaptor(images);
         viewPager.setAdapter(adapter);
+
+        // Carousel visual settings
+        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOverScrollMode(ViewPager2.OVER_SCROLL_NEVER);
+
+        // 💫 Smooth incline-style animation
+        viewPager.setPageTransformer((page, position) -> {
+            page.setTranslationX(-position * page.getWidth() * 0.3f);  // subtle slide
+            page.setRotationY(position * 15);                          // tilt effect
+            page.setAlpha(1 - Math.abs(position));                     // fade edges
+        });
+
+        // Auto-scroll every 3 seconds
+        carouselRunnable = () -> {
+            if (adapter.getItemCount() > 0) {
+                currentIndex = (currentIndex + 1) % adapter.getItemCount();
+                carouselHandler.postDelayed(carouselRunnable, 8000);
+            }
+        };
+
+        carouselHandler.postDelayed(carouselRunnable, 8000);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        carouselHandler.removeCallbacks(carouselRunnable);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (carouselRunnable != null) {
+            carouselHandler.postDelayed(carouselRunnable, 5000);
+        }
+    }
+
 }

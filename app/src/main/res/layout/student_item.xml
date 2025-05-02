@@ -76,7 +76,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:background="@color/tint"
-                android:backgroundTint="#D50000"
+                android:backgroundTint="@color/field_bg"
                 app:srcCompat="@drawable/baseline_delete_24" />
 
             <TextView

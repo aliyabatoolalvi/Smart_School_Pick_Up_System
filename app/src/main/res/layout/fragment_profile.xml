@@ -2,226 +2,186 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ProfileFragment"
     android:background="@drawable/bg">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
 
-    >
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-
-    <!-- First LinearLayout containing profile details -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginHorizontal="35dp"
-        android:layout_marginTop="50dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="300dp"
-            android:src="@drawable/blueschool"
-            android:scaleType="centerInside"
-            android:layout_marginBottom="20dp"
-            />
-
-        <TextView
-            android:id="@+id/proftitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Your Profile"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"
-            android:gravity="center"
-            android:textColor="@color/black" />
-
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/nameofschool"
-                android:layout_width="130dp"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Profile Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Name of School: "
-                android:textColor="@color/black"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+
+                android:layout_marginBottom="24dp"
+                android:padding="16dp">
+
+                <LinearLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:gravity="left">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="120dp"
+                        android:layout_height="160dp"
+                        android:src="@drawable/schoolfullsora"
+                        android:layout_marginBottom="16dp"
+                        android:layout_gravity="center"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/CircleImage" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="School Profile"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/dark_bg"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Profile fields -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name of School:"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/nameschool"
+                        android:text=""
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email:"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/emailschool"
+                        android:text=""
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Address:"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/addressschool"
+                        android:text=""
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="16dp" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Summary Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/summary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Summary"
+                        android:textColor="@color/dark_bg"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/studenttotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Students: "
+                        android:textSize="16sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/totalguardians"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Guardians: "
+                        android:textSize="16sp"
+                        android:layout_marginBottom="16dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/report"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Generate Report"
+                        android:textColor="@color/white_bg"
+                        android:textSize="15sp"
+                        android:tooltipText="Tap to generate report"
+                        android:textStyle="bold"
+                        app:cornerRadius="12dp"
+                        android:backgroundTint="@color/background_color"
+                        android:layout_gravity="end" />
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⚠️ Danger Zone – Logging out will end your session."
+                android:textSize="14sp"
+                android:textColor="@android:color/holo_red_dark"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/baseline_logout_24"
+                android:iconTint="@color/white_bg"
+                android:text="Logout"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="20dp" />
-
-            <TextView
-                android:id="@+id/nameschool"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" "
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:layout_marginBottom="20dp" />
+                android:textColor="@color/white"
+                android:backgroundTint="#D50000"
+                app:cornerRadius="12dp"
+                android:layout_gravity="center" />
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/email"
-                android:layout_width="130dp"
-                android:layout_height="wrap_content"
-                android:text="Email: "
-                android:textStyle="bold"
-
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:layout_marginBottom="20dp" />
-
-            <TextView
-                android:id="@+id/emailschool"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:layout_marginBottom="20dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/address"
-                android:layout_width="130dp"
-                android:layout_height="wrap_content"
-                android:text="Address: "
-                android:textStyle="bold"
-
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:layout_marginBottom="20dp" />
-
-            <TextView
-                android:id="@+id/addressschool"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:layout_marginBottom="20dp" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/logout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="#D50000"
-            android:textAllCaps="false"
-            android:text="Logout"
-            android:textColor="@color/white"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:gravity="end"
-            android:drawableLeft="@drawable/baseline_logout_24"
-            android:drawableTint="@color/white_bg"
-            />
-    </LinearLayout>
-
-    <!-- Second LinearLayout for the summary, now placed at the bottom -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="bottom"
-        android:layout_marginVertical="50dp"
-        android:gravity="left"
-        android:padding="15dp"
-        android:background="@drawable/editbg"
-
-
-        android:layout_marginHorizontal="35dp"
-
-        >
-
-        <TextView
-            android:id="@+id/summary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:gravity="center"
-            android:text="Summary: "
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/studenttotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                android:text="Total Students: "
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/nostudenttotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                android:text="50"
-                android:textSize="18sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/totalguardians"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                android:text="Total Guardians: "
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/totalguardiansno"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                android:text="60"
-                android:textSize="18sp" />
-        </LinearLayout>
-        <Button
-            android:id="@+id/report"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="@color/white"
-            android:text="Generate Report"
-            android:textColor="@color/white_bg"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:textAllCaps="false"
-            />
-    </LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
 </FrameLayout>

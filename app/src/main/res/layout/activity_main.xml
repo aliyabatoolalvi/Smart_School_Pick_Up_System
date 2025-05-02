@@ -69,16 +69,62 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchBarLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Search students by name, class or section"
+                app:boxCornerRadiusBottomEnd="50dp"
+                app:boxCornerRadiusBottomStart="50dp"
+                app:boxCornerRadiusTopEnd="50dp"
+                app:boxCornerRadiusTopStart="50dp"
+                app:endIconMode="clear_text"
+                app:endIconContentDescription="Clear search"
+                app:endIconTint="@color/dark_bg"
+                app:endIconMinSize="36dp"
+                app:hintEnabled="true"
+                app:hintAnimationEnabled="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/swipeRefreshLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/searchBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:inputType="text"
+                android:drawableStart="@drawable/baseline_search_24"
+                android:drawablePadding="12dp"
+                android:drawableTint="@color/dark_bg"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:cursorVisible="true"
+
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
             <!-- Swipe to Refresh -->
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipeRefreshLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/searchBarLayout"
+
+                android:layout_height="490dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerview"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:paddingTop="8dp"/>
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -148,7 +194,7 @@
         android:layout_marginBottom="32dp"
         android:text="Add New Student"
         android:textSize="20sp"
-        app:backgroundTint="#D450B7E6"
+        app:backgroundTint="@color/dark_bg"
         app:icon="@drawable/baseline_add_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.finallab.smartschoolpickupsystem.Activities.AddGuardian;
 import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,13 +34,12 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private FirebaseAuth mAuth;
     private ProgressBar progress;
-    private SharedPreferences sharedPref; // ✅ SharedPreferences to store admin credentials
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onStart() {
         super.onStart();
         if (mAuth.getCurrentUser() != null) {
-            // User is already logged in, check their role and redirect accordingly
             checkUserRoleAndRedirect();
         }
     }
@@ -58,8 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         registersign = findViewById(R.id.registersign);
         forgotpassword = findViewById(R.id.forgot);
 
-        sharedPref = getSharedPreferences("AdminPrefs", MODE_PRIVATE); // ✅ Initialize SharedPreferences
-
+        sharedPref = getSharedPreferences("AdminPrefs", MODE_PRIVATE);
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
@@ -78,13 +77,10 @@ public class LoginActivity extends AppCompatActivity {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(LoginActivity.this, task -> {
                         if (task.isSuccessful()) {
-                            // ✅ Save Admin Email and Password after successful login
                             sharedPref.edit()
                                     .putString("admin_email", email)
                                     .putString("admin_password", password)
                                     .apply();
-
-                            // Login successful, now check user role
                             checkUserRoleAndRedirect();
 
 
@@ -139,19 +135,21 @@ public class LoginActivity extends AppCompatActivity {
                             switch (role) {
                                 case "schoolAdmin":
                                     intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                    startActivity(intent);
                                     break;
                                 case "guardian":
-                                    // intent = new Intent(LoginActivity.this, GuardianDashboardActivity.class);
+                                     intent = new Intent(LoginActivity.this, AddGuardian.class);
                                     break;
                                 case "guard":
-                                    // intent = new Intent(LoginActivity.this, GuardDashboardActivity.class);
+                                    intent = new Intent(LoginActivity.this, AddGuardian.class);
+//                                     intent = new Intent(LoginActivity.this, AddGuard.class);
                                     break;
                                 default:
                                     Toast.makeText(this, "Invalid role.", Toast.LENGTH_SHORT).show();
                                     mAuth.signOut();
                                     return;
                             }
+                            startActivity(intent);
+
                             finish();
                         } else {
                             Toast.makeText(this, "Role not found.", Toast.LENGTH_SHORT).show();

@@ -75,6 +75,8 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.play.services.maps)
     implementation(libs.transport.api)
+    implementation("androidx.gridlayout:gridlayout:1.1.0")
+    implementation("com.airbnb.android:lottie:6.0.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

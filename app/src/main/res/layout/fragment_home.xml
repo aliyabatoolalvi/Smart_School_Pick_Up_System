@@ -1,57 +1,196 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:id="@+id/navigationText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Welcome!"
-        android:textSize="18sp"
-        android:textAlignment="center"
-        android:layout_marginBottom="16dp" />
+    android:layout_height="match_parent">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <LinearLayout
-        android:id="@+id/container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
+        android:padding="16dp"
 
-        >
+        android:background="@color/white">
 
+        <!-- Welcome Header -->
+<!--        <TextView-->
+<!--            android:id="@+id/welcomeText"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Welcome, Admin!"-->
+<!--            android:textSize="27sp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textColor="@color/background_color"-->
+<!--            android:gravity="center"-->
+<!--            android:layout_marginBottom="12dp" />-->
+
+        <!-- Section Label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dashboard"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@color/border_stroke"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- ViewPager with Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            android:layout_marginBottom="20dp">
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Section: Actions -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Quick Actions"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@color/border_stroke"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Section: Manage Users -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Manage Users"
+            android:textSize="16sp"
+            android:textColor="@color/dark_bg"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Grid Buttons -->
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/adminGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:alignmentMode="alignMargins"
+            app:columnCount="2"
+            android:layout_gravity="center"
+            app:rowCount="4"
+            app:rowOrderPreserved="false"
+            app:useDefaultMargins="true">
+
+            <!-- Manage Students -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manageStudentsBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                app:iconSize="60dp"
+                app:icon="@drawable/students"
+                app:iconGravity="top"
+                app:iconPadding="6dp"
+                android:text="Manage Students"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/background_color" />
+
+            <!-- Manage Guardians -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manageGuardiansBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_columnWeight="1"
+                android:layout_margin="8dp"
+                app:iconSize="60dp"
+                app:icon="@drawable/guardians"
+                app:iconGravity="top"
+                app:iconPadding="6dp"
+                android:text="Manage Guardians"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/background_color" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manageGuardsBtn"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:layout_columnSpan="2"
+                android:layout_margin="8dp"
+                app:iconSize="60dp"
+                app:icon="@drawable/guard"
+                app:iconGravity="top"
+                app:iconPadding="6dp"
+                android:text="Manage Guards"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/background_color" />
+
+            <!-- Section: Reports & Feedback -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reports &amp; Feedback"
+                android:textSize="16sp"
+                app:layout_columnSpan="2"
+                android:textColor="@color/dark_bg"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Pickup Reports -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/reportbtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:icon="@drawable/report"
+                app:layout_columnWeight="1"
+                app:iconSize="50dp"
+                app:iconGravity="start"
+                app:iconPadding="8dp"
+                android:text="Report"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                app:backgroundTint="@color/dark_bg" />
+
+            <!-- Feedback -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/feedbackBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:icon="@drawable/feedback"
+                app:layout_columnWeight="1"
+                app:iconSize="50dp"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                android:text="Feedback"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                app:backgroundTint="@color/dark_bg" />
+
+            <!-- School Profile -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/schoolprofile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:icon="@drawable/schoolicon"
+                app:layout_columnSpan="2"
+                app:iconSize="50dp"
+                app:iconGravity="start"
+                app:iconPadding="8dp"
+                android:text="School Profile"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                app:backgroundTint="@color/dark_bg" />
+
+        </androidx.gridlayout.widget.GridLayout>
     </LinearLayout>
+</ScrollView>
+</androidx.drawerlayout.widget.DrawerLayout>
 
-    <Button
-        android:id="@+id/listStudentsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="List of Students"
-        android:textColor="@color/white"
-        android:layout_marginBottom="8dp" />
-
-    <Button
-        android:id="@+id/addStudentButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-
-        android:text="Add Student"
-        android:layout_marginBottom="8dp" />
-    />
-
-    <Button
-        android:id="@+id/showuid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-
-        android:text="Show User ID" />
-</LinearLayout>

@@ -19,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.finallab.smartschoolpickupsystem.Activities.StudentDetails;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -45,31 +47,44 @@ public class ProfileFragment extends Fragment implements OnStudentDeletedListene
         super.onViewCreated(view, savedInstanceState);
 
         Button logoutButton = view.findViewById(R.id.logout);
+        MaterialButton report = view.findViewById(R.id.report);
         textViewName = view.findViewById(R.id.nameschool);
         textViewEmail = view.findViewById(R.id.emailschool);
         textViewAddress = view.findViewById(R.id.addressschool);  // Added TextView for address
-        studentcount = view.findViewById(R.id.nostudenttotal);  // TextView for student count
-        guardiancount = view.findViewById(R.id.totalguardiansno);
+        studentcount = view.findViewById(R.id.studenttotal);  // TextView for student count
+        guardiancount = view.findViewById(R.id.totalguardians);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
 
         logoutButton.setOnClickListener(v -> {
+            new MaterialAlertDialogBuilder(getActivity())
+                    .setTitle("Logout?")
+                    .setMessage("Logging out will end your session.")
+                    .setPositiveButton("Logout", (dialog, which) -> {
+                        // ✅ Clear AdminPrefs
+                        SharedPreferences sharedPref = requireActivity().getSharedPreferences("AdminPrefs", Context.MODE_PRIVATE);
+                        sharedPref.edit().clear().apply();
 
-            SharedPreferences sharedPref = requireActivity().getSharedPreferences("AdminPrefs", Context.MODE_PRIVATE);
+                        // ✅ Clear stored user role
+                        SharedPreferences userPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                        userPref.edit().clear().apply();
 
-            sharedPref.edit().clear().apply();
+                        // ✅ Sign out from Firebase
+                        mAuth.signOut();
+                        Toast.makeText(getContext(), "You’ll need to login again next time.", Toast.LENGTH_SHORT).show();
 
-            // ✅ Clear stored user role
-            SharedPreferences userPref = requireActivity().getSharedPreferences("UserPrefs", MODE_PRIVATE);
-            userPref.edit().clear().apply();
+                        // ✅ Redirect to LoginActivity
+                        Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                        startActivity(intent);
+                        requireActivity().finish();
 
-            // ✅ Sign out from FirebaseAuth
-            mAuth.signOut();
-            Intent intent = new Intent(requireActivity(), LoginActivity.class);
-            startActivity(intent);
-            requireActivity().finish(); // Ensure the Activity finishes
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+
         });
+
 
         fetchUserData();
         fetchStudentAndGuardianCounts();
@@ -117,7 +132,7 @@ public class ProfileFragment extends Fragment implements OnStudentDeletedListene
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     int studentCount = querySnapshot.size();
-                    studentcount.setText(String.valueOf(studentCount));
+                    studentcount.setText("Total Students: " +studentCount);
                 })
                 .addOnFailureListener(e -> {
                     showToast("Error fetching student count: " + e.getMessage());
@@ -128,7 +143,7 @@ public class ProfileFragment extends Fragment implements OnStudentDeletedListene
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     int guardianCount = querySnapshot.size();
-                    guardiancount.setText(String.valueOf(guardianCount));
+                    guardiancount.setText("Total Guardians: "+ guardianCount);
                 })
                 .addOnFailureListener(e -> {
                     showToast("Error fetching guardian count: " + e.getMessage());
