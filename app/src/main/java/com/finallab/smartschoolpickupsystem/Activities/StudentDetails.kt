@@ -21,6 +21,7 @@ import com.finallab.smartschoolpickupsystem.Recycler.RecyclerViewAdapter
 import com.finallab.smartschoolpickupsystem.Room.AppDatabase
 import com.finallab.smartschoolpickupsystem.Utilities
 import com.finallab.smartschoolpickupsystem.databinding.ActivityStudentDetailsBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
@@ -136,7 +137,11 @@ class StudentDetails : AppCompatActivity() {
                         }
 
                         if (availableGuardianNames.isEmpty()) {
-                            Toast.makeText(this, "No new guardians to attach", Toast.LENGTH_SHORT).show()
+                            MaterialAlertDialogBuilder(this)
+                                .setTitle("No Available Guardians")
+                                .setMessage("All guardians are already linked to this student.")
+                                .setPositiveButton("OK", null)
+                                .show()
                             return@addOnSuccessListener
                         }
 

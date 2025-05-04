@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.finallab.smartschoolpickupsystem.BuildConfig
 import com.finallab.smartschoolpickupsystem.DataModels.Guardian
@@ -41,6 +42,29 @@ class AddGuardian : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddGuardianBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+//        live validation
+        binding.CNIC.editText?.doOnTextChanged { text, _, _, _ ->
+            val cnic = text.toString().trim()
+            val cnicRegex = "^[0-9]{13}$".toRegex()
+
+            if (cnic.matches(cnicRegex)) {
+                binding.CNIC.error = null
+            } else {
+                binding.CNIC.error = "CNIC must be exactly 13 digits"
+            }
+        }
+
+        binding.number.editText?.doOnTextChanged { text, _, _, _ ->
+            val number = text.toString().trim()
+            val phoneRegex = "^(03[0-9]{9}|\\+?[1-9][0-9]{9,14})$".toRegex()
+
+            if (number.matches(phoneRegex)) {
+                binding.number.error = null
+            } else {
+                binding.number.error = "Invalid phone number"
+            }
+        }
 
         val studentDocID = intent.getStringExtra("studentDocumentID") ?: ""
         binding.backButton.setOnClickListener { onBackPressed() }
@@ -271,9 +295,13 @@ class AddGuardian : AppCompatActivity() {
                                     userId = currentSchoolUid
                                 )
 
+                                // ✅ Set guardianDocId
+                                guardian.guardianDocId = guardianUid
+
+                                // 🔄 Merge to prevent overwriting existing data
                                 firestore.collection("guardians")
                                     .document(guardianUid)
-                                    .set(guardian.toMap())
+                                    .set(guardian.toMap(), com.google.firebase.firestore.SetOptions.merge())
                                     .addOnSuccessListener {
                                         val userMap = mapOf(
                                             "uid" to guardianUid,

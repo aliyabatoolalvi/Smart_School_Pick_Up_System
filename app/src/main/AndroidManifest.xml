@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
 
 
@@ -18,6 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartSchoolPickUpSystem"
+        tools:replace="fullBackupContent"
+
         tools:targetApi="31">
 
         <!--
@@ -82,7 +85,30 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
         </activity>
+
+        <activity android:name=".Activities.AdminReport" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Feedbackactivity"
+            android:exported="false" />
+
+
+        <activity
+            android:name=".ReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".QrCodeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ParentDashboardActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="preloaded_fonts"

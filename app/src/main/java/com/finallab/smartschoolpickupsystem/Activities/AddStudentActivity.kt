@@ -35,6 +35,10 @@ class AddStudentActivity : AppCompatActivity() {
 
     private var selectedGuardianId: String = ""
 
+    // ✅ Get stored admin UID
+    private val currentUserId by lazy {
+        getSharedPreferences("AdminPrefs", MODE_PRIVATE).getString("admin_userId", null)
+    }
     companion object {
         private const val REQUEST_CODE_ADD_GUARDIAN = 101
     }
@@ -83,7 +87,7 @@ class AddStudentActivity : AppCompatActivity() {
             reg = rollNo,
             studentClass = studentClass,
             section = section,
-            userId = currentUser?.uid ?: "",
+            userId = currentUserId ?: "",
             studentDocId = ""
         )
 
@@ -171,21 +175,25 @@ class AddStudentActivity : AppCompatActivity() {
     }
 
     private fun fetchAvailableGuardians() {
-        currentUser?.uid?.let { userId ->
-            firestore.collection("guardians")
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener { snapshot ->
-                    val guardians = snapshot.documents
-                        .filter { !it.getString("Gname").isNullOrBlank() && !it.getString("CNIC").isNullOrBlank() }
-                        .distinctBy { it.getString("CNIC") } // ✅ Filter by CNIC to avoid duplicate names
-
-                    updateGuardianDropdown(guardians)
-                }
-                .addOnFailureListener {
-                    updateGuardianDropdown(emptyList())
-                }
+        val userId = currentUser?.uid
+        if (userId.isNullOrEmpty()) {
+            showToast("User not logged in.")
+            return
         }
+
+        firestore.collection("guardians")
+            .whereEqualTo("userId", userId) // ✅ Now using UID string
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val guardians = snapshot.documents
+                    .filter { !it.getString("Gname").isNullOrBlank() && !it.getString("CNIC").isNullOrBlank() }
+                    .distinctBy { it.getString("CNIC") }
+
+                updateGuardianDropdown(guardians)
+            }
+            .addOnFailureListener {
+                updateGuardianDropdown(emptyList())
+            }
     }
 
     private fun updateGuardianDropdown(guardians: List<com.google.firebase.firestore.DocumentSnapshot>) {
@@ -200,11 +208,11 @@ class AddStudentActivity : AppCompatActivity() {
                     .inflate(android.R.layout.simple_list_item_1, parent, false)) as TextView
 
                 val item = getItem(position)
-                if (item is com.google.firebase.firestore.DocumentSnapshot) {
-                    textView.text = item.getString("Gname") ?: "Unknown"
-                } else {
-                    textView.text = "None"
-                }
+                textView.text = if (item is com.google.firebase.firestore.DocumentSnapshot)
+                    item.getString("Gname") ?: "Unknown"
+                else
+                    "None"
+
                 return textView
             }
         }
@@ -215,12 +223,30 @@ class AddStudentActivity : AppCompatActivity() {
             if (selectedItem is com.google.firebase.firestore.DocumentSnapshot) {
                 selectedGuardianId = selectedItem.id
                 parentDropdown.setText(selectedItem.getString("Gname") ?: "", false)
+
+                // ❌ Disable "Add Guardian" button when existing guardian selected
+                binding.addGuardianButton.isEnabled = false
+                binding.addGuardianButton.alpha = 0.5f
             } else {
                 selectedGuardianId = ""
                 parentDropdown.setText("None", false)
+
+                // ✅ Enable "Add Guardian" button only when "None" is selected
+                binding.addGuardianButton.isEnabled = true
+                binding.addGuardianButton.alpha = 1f
             }
         }
+
+        // Default state: show add button if no guardian selected yet
+        if (selectedGuardianId.isEmpty()) {
+            binding.addGuardianButton.isEnabled = true
+            binding.addGuardianButton.alpha = 1f
+        } else {
+            binding.addGuardianButton.isEnabled = false
+            binding.addGuardianButton.alpha = 0.5f
+        }
     }
+
 
     private fun clearInputFields() {
         binding.namestudent.editText?.setText("")

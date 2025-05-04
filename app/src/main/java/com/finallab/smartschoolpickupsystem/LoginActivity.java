@@ -128,8 +128,12 @@ public class LoginActivity extends AppCompatActivity {
                         String role = document.getString("role");
 
                         if (role != null) {
-                            SharedPreferences sharedPref = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                            sharedPref.edit().putString("user_role", role).apply();
+                            SharedPreferences.Editor adminEditor = getSharedPreferences("AdminPrefs", MODE_PRIVATE).edit();
+                            adminEditor.putString("admin_userId", userId);
+                            adminEditor.apply();
+
+                            SharedPreferences userEditor = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                            userEditor.edit().putString("user_role", role).apply();
 
                             Intent intent;
                             switch (role) {
@@ -137,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                                     intent = new Intent(LoginActivity.this, HomeActivity.class);
                                     break;
                                 case "guardian":
-                                     intent = new Intent(LoginActivity.this, AddGuardian.class);
+                                     intent = new Intent(LoginActivity.this, ParentDashboardActivity.class);
                                     break;
                                 case "guard":
                                     intent = new Intent(LoginActivity.this, AddGuardian.class);

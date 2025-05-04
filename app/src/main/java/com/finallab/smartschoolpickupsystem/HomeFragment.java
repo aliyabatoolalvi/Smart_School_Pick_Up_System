@@ -18,6 +18,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.finallab.smartschoolpickupsystem.Activities.AddGuardian;
 import com.finallab.smartschoolpickupsystem.Activities.AddStudentActivity;
+import com.finallab.smartschoolpickupsystem.Activities.AdminReport;
 import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,6 +74,10 @@ public class HomeFragment extends Fragment {
 
         listStudentsButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+        });
+        reportsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AdminReport.class);
             startActivity(intent);
         });
 

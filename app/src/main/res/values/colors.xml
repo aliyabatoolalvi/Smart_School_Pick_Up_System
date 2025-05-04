@@ -31,6 +31,14 @@
     <color name="cardfield_bg">#995AA9E6</color>
     <color name="menuItem">@color/background_color</color>
 
+    <!--Guardian side colors-->
+    <color name="blue">#FFFFFFFF</color>
+    <color name="primary">#6200EE</color>
+    <color name="primaryDark">#3700B3</color>
+    <color name="light_background">#F5F5F5</color>
+    <color name="light_blue">#5E03A9F4</color>
+    <color name="dark_gray">#A9A9A9</color>
+    <color name="coreblue">#0090E9</color>
 
 
 
