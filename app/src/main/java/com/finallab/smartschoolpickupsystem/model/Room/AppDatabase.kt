@@ -23,7 +23,7 @@ import com.finallab.smartschoolpickupsystem.StudentEntity
         PickUpReport::class,
         GuardianEntity::class
     ],
-    version = 3, // Increment version
+    version = 4, // Increment version
     exportSchema = false
 )
 @TypeConverters(Converters::class)

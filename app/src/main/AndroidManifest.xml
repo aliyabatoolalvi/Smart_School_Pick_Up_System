@@ -5,10 +5,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
-
 
     <application
         android:allowBackup="true"
@@ -20,9 +18,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartSchoolPickUpSystem"
         tools:replace="fullBackupContent"
-
         tools:targetApi="31">
-
+        <activity
+            android:name=".Guard.GuardEmailLoginActivity"
+            android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
 
@@ -37,7 +36,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="YOUR_API_KEY" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -61,9 +59,7 @@
         <activity
             android:name=".Activities.AddStudentActivity"
             android:exported="false" />
-
         <activity android:name=".Activities.EditGuardianActivity" />
-
         <activity
             android:name=".Activities.StudentDetails"
             android:exported="false" />
@@ -73,7 +69,6 @@
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true" />
-
         <activity
             android:name=".LoginActivity"
             android:exported="true" />
@@ -85,30 +80,48 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-
         </activity>
-
         <activity android:name=".Activities.AdminReport" />
-
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".Feedbackactivity"
             android:exported="false" />
-
-
         <activity
             android:name=".ReportActivity"
             android:exported="false" />
         <activity
             android:name=".QrCodeActivity"
             android:exported="false" />
-
         <activity
             android:name=".ParentDashboardActivity"
+            android:exported="false" /> <!-- GUARD SECTION -->
+        <activity
+            android:name=".Guard.ScannedStudentListActivity"
             android:exported="false" />
+        <activity
+            android:name=".Guard.GuardSplash"
+            android:exported="true"></activity>
+        <activity
+            android:name=".Guard.ScannerActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".Guard.GuardListActivity"
+            android:exported="true"></activity>
+        <activity
+            android:name=".Guard.GuardAddActivity"
+            android:exported="true" />
+        <activity
+            android:name=".Guard.PortraitCaptureActivity"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:theme="@style/zxing_CaptureTheme"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".Guard.GuardPhoneLoginActivity"
+            android:exported="true" />
 
         <meta-data
             android:name="preloaded_fonts"

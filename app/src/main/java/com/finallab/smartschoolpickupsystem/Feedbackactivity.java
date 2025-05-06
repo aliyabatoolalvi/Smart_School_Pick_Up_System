@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,7 +21,8 @@ import java.util.Map;
 public class Feedbackactivity extends AppCompatActivity {
 
     private EditText feedbackInput;
-    private Button submitFeedbackButton,back_btn;
+    private Button submitFeedbackButton;
+    private ImageButton back_btn;
     private FirebaseFirestore db;
 
 

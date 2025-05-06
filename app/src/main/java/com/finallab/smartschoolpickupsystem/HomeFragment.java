@@ -20,6 +20,8 @@ import com.finallab.smartschoolpickupsystem.Activities.AddGuardian;
 import com.finallab.smartschoolpickupsystem.Activities.AddStudentActivity;
 import com.finallab.smartschoolpickupsystem.Activities.AdminReport;
 import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
+import com.finallab.smartschoolpickupsystem.Guard.GuardAddActivity;
+import com.finallab.smartschoolpickupsystem.Guard.GuardListActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,7 +32,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private ViewPager2 viewPager;
-    private Button listStudentsButton, manageGuardian, showUserID;
+    private Button listStudentsButton, manageGuardian, showUserID, manageGuards;
     private TextView navigationText;
 
     private Handler carouselHandler = new Handler();
@@ -67,6 +69,7 @@ public class HomeFragment extends Fragment {
         listStudentsButton = view.findViewById(R.id.manageStudentsBtn);
         manageGuardian = view.findViewById(R.id.manageGuardiansBtn);
         showUserID = view.findViewById(R.id.schoolprofile);
+        manageGuards= view.findViewById(R.id.manageGuardsBtn);
 
 //        navigationText.setText("Welcome! Use the buttons below to manage students or enjoy the carousel.");
 
@@ -74,6 +77,11 @@ public class HomeFragment extends Fragment {
 
         listStudentsButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+        });
+
+        manageGuards.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), GuardListActivity.class);
             startActivity(intent);
         });
         reportsBtn.setOnClickListener(v -> {

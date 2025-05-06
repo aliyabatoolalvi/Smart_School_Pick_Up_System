@@ -89,7 +89,7 @@ public class ReportActivity extends AppCompatActivity {
                             entity.setStudentName(report.getStudentName());
                             entity.setTimestamp(report.getTimestamp());
                             entity.setReportText(report.getReportText());
-                            entity.setCNIC(report.getCNIC());
+                            entity.setGuardianName(report.getGuardName());
                             entities.add(entity);
                         }
                     }
@@ -118,7 +118,7 @@ public class ReportActivity extends AppCompatActivity {
                             report.setStudentName(r.getStudentName());
                             report.setTimestamp(r.getTimestamp());
                             report.setReportText(r.getReportText());
-                            report.setCNIC(r.getCNIC());
+                            report.setGuardianName(r.getGuardName());
                             fallbackList.add(report);
                         }
 

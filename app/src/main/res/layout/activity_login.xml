@@ -5,7 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -26,14 +27,33 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-
             android:layout_marginStart="40dp"
             android:layout_marginTop="140dp"
             android:text="Login to continue"
             android:textColor="@android:color/white"
             android:textSize="50dp"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/phoneLoginText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login as Guards"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_below="@id/title"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="30dp"
+            android:elevation="2dp"
+            android:shadowRadius="@integer/material_motion_duration_long_2"
+            android:background="@drawable/custombtn"
+            android:paddingHorizontal="47dp"
+            android:paddingVertical="2dp"
 
+            />
         <LinearLayout
             android:id="@+id/form"
             android:layout_width="600dp"
@@ -117,6 +137,9 @@
             </LinearLayout>
 
         </LinearLayout>
+
+
+
 
         <Button
             android:id="@+id/next"

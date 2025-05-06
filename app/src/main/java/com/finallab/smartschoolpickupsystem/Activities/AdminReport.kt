@@ -2,6 +2,7 @@ package com.finallab.smartschoolpickupsystem.Activities
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
@@ -17,9 +18,11 @@ import com.finallab.smartschoolpickupsystem.PickUpReport
 import com.finallab.smartschoolpickupsystem.R
 import com.finallab.smartschoolpickupsystem.ReportAdapter
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
@@ -127,27 +130,67 @@ class AdminReport : AppCompatActivity() {
     }
 
     private fun generateBarChart(reports: List<PickUpReport>) {
-        val counts = TreeMap<String, Int>()
+        val manualCounts = TreeMap<String, Int>()
+        val qrCounts = TreeMap<String, Int>()
         val format = SimpleDateFormat("EEE", Locale.getDefault())
 
         for (report in reports) {
-            report.timestamp?.let {
-                val day = format.format(it)
-                counts[day] = (counts[day] ?: 0) + 1
+            val day = report.timestamp?.let { format.format(it) } ?: continue
+            when {
+                report.method.equals("Manual CNIC", true) -> {
+                    manualCounts[day] = (manualCounts[day] ?: 0) + 1
+                }
+                report.method.equals("QR scan", true) -> {
+                    qrCounts[day] = (qrCounts[day] ?: 0) + 1
+                }
             }
         }
 
-        val entries = mutableListOf<BarEntry>()
         val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        val manualEntries = mutableListOf<BarEntry>()
+        val qrEntries = mutableListOf<BarEntry>()
+
         days.forEachIndexed { index, day ->
-            entries.add(BarEntry(index.toFloat(), counts[day]?.toFloat() ?: 0f))
+            manualEntries.add(BarEntry(index.toFloat(), manualCounts[day]?.toFloat() ?: 0f))
+            qrEntries.add(BarEntry(index.toFloat(), qrCounts[day]?.toFloat() ?: 0f))
         }
 
-        val dataSet = BarDataSet(entries, "Pickups per Day")
-        dataSet.valueTextSize = 12f
-        barChart.data = BarData(dataSet)
+        val manualDataSet = BarDataSet(manualEntries, "Manual Pickups").apply {
+            color = Color.parseColor("#FF7043")
+        }
+        val qrDataSet = BarDataSet(qrEntries, "QR Pickups").apply {
+            color = Color.parseColor("#42A5F5")
+        }
+
+        val groupSpace = 0.3f
+        val barSpace = 0.05f
+        val barWidth = 0.3f
+
+        val barData = BarData(manualDataSet, qrDataSet).apply {
+            this.barWidth = barWidth
+        }
+
+        // Setup XAxis
+        val xAxis = barChart.xAxis
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.granularity = 1f
+        xAxis.setDrawGridLines(false)
+        xAxis.labelCount = days.size
+        xAxis.valueFormatter = IndexAxisValueFormatter(days)
+
+        barChart.axisLeft.axisMinimum = 0f
+        barChart.axisRight.isEnabled = false
+        barChart.description.isEnabled = false
+        barChart.legend.isEnabled = true
+
+        // Proper grouping
+        barChart.data = barData
+        barChart.xAxis.axisMinimum = 0f
+        barChart.xAxis.axisMaximum = 0f + barData.getGroupWidth(groupSpace, barSpace) * days.size
+        barChart.groupBars(0f, groupSpace, barSpace)
         barChart.invalidate()
     }
+
 
     private fun detectLatePickups(reports: List<PickUpReport>) {
         for (report in reports) {

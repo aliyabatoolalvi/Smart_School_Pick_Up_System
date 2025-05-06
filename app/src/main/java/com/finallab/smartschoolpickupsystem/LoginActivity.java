@@ -20,12 +20,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.finallab.smartschoolpickupsystem.Activities.AddGuardian;
 import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
+import com.finallab.smartschoolpickupsystem.Guard.GuardEmailLoginActivity;
+import com.finallab.smartschoolpickupsystem.Guard.GuardPhoneLoginActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
@@ -59,6 +63,13 @@ public class LoginActivity extends AppCompatActivity {
         forgotpassword = findViewById(R.id.forgot);
 
         sharedPref = getSharedPreferences("AdminPrefs", MODE_PRIVATE);
+
+        TextView phoneLoginText = findViewById(R.id.phoneLoginText);
+        phoneLoginText.setOnClickListener(v -> {
+                showGuardLoginMethodDialog();
+        });
+
+
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
@@ -82,16 +93,13 @@ public class LoginActivity extends AppCompatActivity {
                                     .putString("admin_password", password)
                                     .apply();
                             checkUserRoleAndRedirect();
-
-
                         } else {
-                            progress.setVisibility(View.GONE);
-                            Utilities.showErrorSnack(findViewById(android.R.id.content),
-                                    LoginActivity.this, "Authentication failed: " +
-                                            task.getException().getMessage());
+                            // 🔄 Try Firestore-based login for guards
+                            fallbackLoginForGuard(email, password);
                         }
                     });
         });
+
 
         registersign.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, SignUp.class);
@@ -169,5 +177,59 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error checking user role: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private void fallbackLoginForGuard(String email, String password) {
+        FirebaseFirestore.getInstance().collection("guards")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    progress.setVisibility(View.GONE);
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                        String storedPassword = doc.getString("password");
+                        String role = doc.getString("role");
+
+                        if (storedPassword != null && storedPassword.trim().equals(password.trim()) && "guard".equals(role)) {
+                            // ✅ Guard login success
+                            SharedPreferences.Editor userEditor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
+                            userEditor.putString("user_role", "guard");
+                            userEditor.putString("guard_id", doc.getId());
+                            userEditor.putString("guard_email", email);
+                            userEditor.apply();
+
+                            Intent intent = new Intent(LoginActivity.this, AddGuardian.class); // or GuardDashboard
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(this, "Invalid credentials for guard", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "Authentication failed: invalid credentials", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    progress.setVisibility(View.GONE);
+                    Toast.makeText(this, "Login failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+    private void showGuardLoginMethodDialog() {
+        String[] options = {"Login with Phone (OTP)", "Login with Email & Password"};
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Select Login Method")
+                .setItems(options, (dialog, which) -> {
+                    Intent intent;
+                    if (which == 0) {
+                        intent = new Intent(this, GuardPhoneLoginActivity.class);
+                    } else {
+                        intent = new Intent(this, GuardEmailLoginActivity.class);
+                    }
+                    startActivity(intent);
+                })
+                .setBackground(getDrawable(R.drawable.dialog_bg)) // optional for rounded corners
+                .show();
+    }
+
+
 
 }
