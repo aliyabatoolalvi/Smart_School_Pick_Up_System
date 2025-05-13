@@ -34,7 +34,7 @@ import java.time.Instant;
 
 public class QrCodeActivity extends AppCompatActivity {
     private ImageView qrCodeImage;
-    private Button backButton;
+    private ImageView backButton;
     private ProgressBar qrProgressBar;
     private FirebaseFirestore db;
     private AppDatabase localDb;
@@ -46,7 +46,7 @@ public class QrCodeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_qr_code);
 
         qrCodeImage = findViewById(R.id.qrCodeImageView);
-        backButton = findViewById(R.id.backButton);
+        backButton = findViewById(R.id.back_arrow);
         qrProgressBar = findViewById(R.id.qrProgressBar);
 
         db = FirebaseFirestore.getInstance();

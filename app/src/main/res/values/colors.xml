@@ -8,6 +8,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="trans">#00FFFFFF</color>
 
     <color name="background_color">#5AA9E6</color>
     <color name="dark_bg">#7fc8f8</color>
@@ -19,6 +20,8 @@
     <color name="text_field_text">#FFFFFF</color> <!-- White for Dark Mode -->
     <color name="text_field_hint">#80FFFFFF</color> <!-- Faded white for hint -->
 
+    <color name="red">#B00020</color>
+    <color name="green">#00C853</color>
 
     <color name="form_bg">#f9f9f9</color>
     <color name="input_text">#212121</color>

@@ -1,128 +1,120 @@
 package com.finallab.smartschoolpickupsystem;
 
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.IgnoreExtraProperties;
-import com.google.firebase.firestore.PropertyName;
-
-import java.util.Date;
 
 @IgnoreExtraProperties
-@Entity(tableName = "pick_up_activities")
 public class PickUpReport {
 
-    @PrimaryKey(autoGenerate = true)
-    private int reportID;
-
     private String studentName;
-    private String studentId;
-    private String guardianName;
-    private String guardianId;
-    private String guardName;
-    private String guardId;
+    private Timestamp timestamp;
+    private String deviation;
+    private String pickedBy;
+    private String pickedByUID;
     private String method;
-    private Date timestamp;
     private String reportText;
+    private String guardianId;     // 🔄 added
+    private String guardName;      // 🔄 added
+    private String studentId;      // 🔄 added
+    private String schoolId;       // 🔄 added
 
     public PickUpReport() {}
 
-    public int getReportID() {
-        return reportID;
+    public PickUpReport(String studentName, Timestamp timestamp, String deviation, String pickedBy, String pickedByUID) {
+        this.studentName = studentName;
+        this.timestamp = timestamp;
+        this.deviation = deviation;
+        this.pickedBy = pickedBy;
+        this.pickedByUID = pickedByUID;
     }
 
-    public void setReportID(int reportID) {
-        this.reportID = reportID;
-    }
+    // --- Getters & Setters ---
 
-    @PropertyName("studentName")
     public String getStudentName() {
         return studentName;
     }
 
-    @PropertyName("studentName")
     public void setStudentName(String studentName) {
         this.studentName = studentName;
     }
 
-    @PropertyName("studentId")
-    public String getStudentId() {
-        return studentId;
+    public Timestamp getTimestamp() {
+        return timestamp;
     }
 
-    @PropertyName("studentId")
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
-    @PropertyName("guardianName")
-    public String getGuardianName() {
-        return guardianName;
+    public String getDeviation() {
+        return deviation;
     }
 
-    @PropertyName("guardianName")
-    public void setGuardianName(String guardianName) {
-        this.guardianName = guardianName;
+    public void setDeviation(String deviation) {
+        this.deviation = deviation;
     }
 
-    @PropertyName("guardianId")
-    public String getGuardianId() {
-        return guardianId;
+    public String getPickedBy() {
+        return pickedBy;
     }
 
-    @PropertyName("guardianId")
-    public void setGuardianId(String guardianId) {
-        this.guardianId = guardianId;
+    public void setPickedBy(String pickedBy) {
+        this.pickedBy = pickedBy;
     }
 
-    @PropertyName("guardName")
-    public String getGuardName() {
-        return guardName;
+    public String getPickedByUID() {
+        return pickedByUID;
     }
 
-    @PropertyName("guardName")
-    public void setGuardName(String guardName) {
-        this.guardName = guardName;
+    public void setPickedByUID(String pickedByUID) {
+        this.pickedByUID = pickedByUID;
     }
 
-    @PropertyName("guardId")
-    public String getGuardId() {
-        return guardId;
-    }
-
-    @PropertyName("guardId")
-    public void setGuardId(String guardId) {
-        this.guardId = guardId;
-    }
-
-
-    @PropertyName("method")
     public String getMethod() {
         return method;
     }
 
-    @PropertyName("method")
     public void setMethod(String method) {
         this.method = method;
     }
 
-    @PropertyName("timestamp")
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    @PropertyName("timestamp")
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    @PropertyName("reportText")
     public String getReportText() {
         return reportText;
     }
 
-    @PropertyName("reportText")
     public void setReportText(String reportText) {
         this.reportText = reportText;
+    }
+
+    public String getGuardianId() {
+        return guardianId;
+    }
+
+    public void setGuardianId(String guardianId) {
+        this.guardianId = guardianId;
+    }
+
+    public String getGuardName() {
+        return guardName;
+    }
+
+    public void setGuardName(String guardName) {
+        this.guardName = guardName;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(String schoolId) {
+        this.schoolId = schoolId;
     }
 }

@@ -20,10 +20,9 @@ import com.finallab.smartschoolpickupsystem.StudentEntity
         Guardian::class,
         GuardianStudentCrossRef::class,
         StudentEntity::class,
-        PickUpReport::class,
         GuardianEntity::class
     ],
-    version = 4, // Increment version
+    version = 5, // Increment version
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -36,7 +35,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     // Parent-side DAOs
     abstract fun studentEntityDao(): StudentDao
-    abstract fun pickUpReportDao(): PickUpReportDao
     abstract fun guardianEntityDao(): GuardianDao
 
     companion object {

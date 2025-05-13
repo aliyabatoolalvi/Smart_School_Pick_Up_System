@@ -272,74 +272,82 @@ class AddGuardian : AppCompatActivity() {
             .addOnSuccessListener { authResult ->
                 val guardianUid = authResult.user?.uid
                 if (guardianUid != null) {
-                    FirebaseAuth.getInstance().signOut()
 
+                    // ✅ Do NOT sign out yet. Wait for admin re-login first
                     FirebaseAuth.getInstance()
                         .signInWithEmailAndPassword(adminEmail, adminPassword)
-                        .addOnSuccessListener {
-                            try {
-                                val currentUser = FirebaseAuth.getInstance().currentUser
-                                if (currentUser == null) {
-                                    showToast("Failed to re-login admin.")
-                                    return@addOnSuccessListener
+                        .addOnCompleteListener { task ->
+                            val flags = getSharedPreferences("Flags", MODE_PRIVATE).edit()
+
+                            if (task.isSuccessful) {
+                                flags.putBoolean("retry_admin_login", false).apply()
+
+                                // ✅ Now it's safe to sign out the temporary guardian
+                                FirebaseAuth.getInstance().signOut()
+
+                                try {
+                                    val currentUser = FirebaseAuth.getInstance().currentUser
+                                    if (currentUser == null) {
+                                        showToast("Failed to re-login admin.")
+                                        return@addOnCompleteListener
+                                    }
+
+                                    val currentSchoolUid = currentUser.uid
+                                    val guardian = Guardian(
+                                        Gname = name,
+                                        number = binding.number.editText?.text.toString(),
+                                        CNIC = binding.CNIC.editText?.text.toString(),
+                                        Email = email,
+                                        QRcodeData = qrData,
+                                        QRcodeBase64 = generateQRCodeBase64(qrData),
+                                        userId = currentSchoolUid
+                                    )
+
+                                    guardian.guardianDocId = guardianUid
+
+                                    firestore.collection("guardians")
+                                        .document(guardianUid)
+                                        .set(guardian.toMap(), com.google.firebase.firestore.SetOptions.merge())
+                                        .addOnSuccessListener {
+                                            val userMap = mapOf(
+                                                "uid" to guardianUid,
+                                                "email" to email,
+                                                "role" to "guardian",
+                                                "schoolId" to currentSchoolUid
+                                            )
+
+                                            firestore.collection("users")
+                                                .document(guardianUid)
+                                                .set(userMap)
+                                                .addOnSuccessListener {
+                                                    saveGuardianToLocalDatabase(guardian)
+                                                    sendGuardianEmail(email, password)
+                                                    showToast("Guardian registered successfully!")
+                                                    binding.progressBar.visibility = View.GONE
+                                                    finish()
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.e("Firestore", "Failed to save user info", e)
+                                                    showToast("Failed to save user info: ${e.message}")
+                                                    binding.progressBar.visibility = View.GONE
+                                                }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("Firestore", "Failed to save guardian", e)
+                                            showToast("Failed to save guardian data: ${e.message}")
+                                            binding.progressBar.visibility = View.GONE
+                                        }
+
+                                } catch (e: Exception) {
+                                    Log.e("ReLogin", "Admin re-login crash: ${e.message}", e)
+                                    showToast("Unexpected error: ${e.message}")
                                 }
 
-                                val currentSchoolUid = currentUser.uid
-                                val guardian = Guardian(
-                                    Gname = name,
-                                    number = binding.number.editText?.text.toString(),
-                                    CNIC = binding.CNIC.editText?.text.toString(),
-                                    Email = email,
-                                    QRcodeData = qrData,
-                                    QRcodeBase64 = generateQRCodeBase64(qrData),
-                                    userId = currentSchoolUid
-                                )
-
-                                // ✅ Set guardianDocId
-                                guardian.guardianDocId = guardianUid
-
-                                // 🔄 Merge to prevent overwriting existing data
-                                firestore.collection("guardians")
-                                    .document(guardianUid)
-                                    .set(guardian.toMap(), com.google.firebase.firestore.SetOptions.merge())
-                                    .addOnSuccessListener {
-                                        val userMap = mapOf(
-                                            "uid" to guardianUid,
-                                            "email" to email,
-                                            "role" to "guardian",
-                                            "schoolId" to currentSchoolUid
-                                        )
-
-                                        firestore.collection("users")
-                                            .document(guardianUid)
-                                            .set(userMap)
-                                            .addOnSuccessListener {
-                                                saveGuardianToLocalDatabase(guardian)
-                                                sendGuardianEmail(email, password)
-                                                showToast("Guardian registered successfully!")
-                                                binding.progressBar.visibility = View.GONE
-                                                finish()
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Log.e("Firestore", "Failed to save user info", e)
-                                                showToast("Failed to save user info: ${e.message}")
-                                                binding.progressBar.visibility = View.GONE
-                                            }
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.e("Firestore", "Failed to save guardian", e)
-                                        showToast("Failed to save guardian data: ${e.message}")
-                                        binding.progressBar.visibility = View.GONE
-                                    }
-                            } catch (e: Exception) {
-                                Log.e("ReLogin", "Admin re-login crash: ${e.message}", e)
-                                showToast("Unexpected error: ${e.message}")
+                            } else {
+                                flags.putBoolean("retry_admin_login", true).apply()
+                                showToast("Admin re-login failed: ${task.exception?.message}")
+                                binding.progressBar.visibility = View.GONE
                             }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("ReLogin", "Firebase sign-in failed: ${e.message}", e)
-                            showToast("Admin re-login failed: ${e.message}")
-                            binding.progressBar.visibility = View.GONE
                         }
                 }
             }
@@ -353,6 +361,8 @@ class AddGuardian : AppCompatActivity() {
                 binding.progressBar.visibility = View.GONE
             }
     }
+
+
 
 
     private fun sendGuardianEmail(email: String, password: String) {

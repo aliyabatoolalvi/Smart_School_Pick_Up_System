@@ -29,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -40,13 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progress;
     private SharedPreferences sharedPref;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (mAuth.getCurrentUser() != null) {
-            checkUserRoleAndRedirect();
-        }
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +61,8 @@ public class LoginActivity extends AppCompatActivity {
 
         TextView phoneLoginText = findViewById(R.id.phoneLoginText);
         phoneLoginText.setOnClickListener(v -> {
-                showGuardLoginMethodDialog();
+            startActivity(new Intent(this, GuardEmailLoginActivity.class));
         });
-
 
         loginButton.setOnClickListener(v -> {
             String email = emailEditText.getText().toString().trim();
@@ -85,18 +79,25 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             progress.setVisibility(View.VISIBLE);
+            loginButton.setEnabled(false);
+
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(LoginActivity.this, task -> {
                         if (task.isSuccessful()) {
+                            loginButton.setEnabled(true);
                             sharedPref.edit()
                                     .putString("admin_email", email)
                                     .putString("admin_password", password)
+                                    .putString("admin_uid", FirebaseAuth.getInstance().getCurrentUser().getUid())
                                     .apply();
                             checkUserRoleAndRedirect();
-                        } else {
-                            // 🔄 Try Firestore-based login for guards
-                            fallbackLoginForGuard(email, password);
                         }
+                        if (!task.isSuccessful()) {
+                            passwordEditText.setText("");
+                            loginButton.setEnabled(true);
+
+                        }
+
                     });
         });
 
@@ -126,109 +127,117 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkUserRoleAndRedirect() {
-        String userId = mAuth.getCurrentUser().getUid();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "Session expired. Please login again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = user.getUid();
 
         FirebaseFirestore.getInstance().collection("users").document(userId)
                 .get()
                 .addOnSuccessListener(document -> {
                     progress.setVisibility(View.GONE);
-                    if (document.exists()) {
-                        String role = document.getString("role");
 
-                        if (role != null) {
-                            SharedPreferences.Editor adminEditor = getSharedPreferences("AdminPrefs", MODE_PRIVATE).edit();
-                            adminEditor.putString("admin_userId", userId);
-                            adminEditor.apply();
-
-                            SharedPreferences userEditor = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-                            userEditor.edit().putString("user_role", role).apply();
-
-                            Intent intent;
-                            switch (role) {
-                                case "schoolAdmin":
-                                    intent = new Intent(LoginActivity.this, HomeActivity.class);
-                                    break;
-                                case "guardian":
-                                     intent = new Intent(LoginActivity.this, ParentDashboardActivity.class);
-                                    break;
-                                case "guard":
-                                    intent = new Intent(LoginActivity.this, AddGuardian.class);
-//                                     intent = new Intent(LoginActivity.this, AddGuard.class);
-                                    break;
-                                default:
-                                    Toast.makeText(this, "Invalid role.", Toast.LENGTH_SHORT).show();
-                                    mAuth.signOut();
-                                    return;
-                            }
-                            startActivity(intent);
-
-                            finish();
-                        } else {
-                            Toast.makeText(this, "Role not found.", Toast.LENGTH_SHORT).show();
-                            mAuth.signOut(); // Log out user if role is missing
-                        }
-                    } else {
-                        Toast.makeText(this, "User not found in database.", Toast.LENGTH_SHORT).show();
-                        mAuth.signOut(); // Log out user if document doesn't exist
+                    if (!document.exists()) {
+                        Toast.makeText(this, "User record not found.", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                })
-                .addOnFailureListener(e -> {
-                    progress.setVisibility(View.GONE);
-                    Toast.makeText(this, "Error checking user role: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
 
-    private void fallbackLoginForGuard(String email, String password) {
-        FirebaseFirestore.getInstance().collection("guards")
-                .whereEqualTo("email", email)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    progress.setVisibility(View.GONE);
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
-                        String storedPassword = doc.getString("password");
-                        String role = doc.getString("role");
-
-                        if (storedPassword != null && storedPassword.trim().equals(password.trim()) && "guard".equals(role)) {
-                            // ✅ Guard login success
-                            SharedPreferences.Editor userEditor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
-                            userEditor.putString("user_role", "guard");
-                            userEditor.putString("guard_id", doc.getId());
-                            userEditor.putString("guard_email", email);
-                            userEditor.apply();
-
-                            Intent intent = new Intent(LoginActivity.this, AddGuardian.class); // or GuardDashboard
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Toast.makeText(this, "Invalid credentials for guard", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(this, "Authentication failed: invalid credentials", Toast.LENGTH_SHORT).show();
+                    String role = document.getString("role");
+                    if (TextUtils.isEmpty(role)) {
+                        Toast.makeText(this, "No role assigned. Contact admin.", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                })
-                .addOnFailureListener(e -> {
-                    progress.setVisibility(View.GONE);
-                    Toast.makeText(this, "Login failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-    private void showGuardLoginMethodDialog() {
-        String[] options = {"Login with Phone (OTP)", "Login with Email & Password"};
 
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Select Login Method")
-                .setItems(options, (dialog, which) -> {
+                    // ✅ Save session
+                    SharedPreferences.Editor adminEditor = getSharedPreferences("AdminPrefs", MODE_PRIVATE).edit();
+                    adminEditor.putString("admin_userId", userId);
+                    adminEditor.apply();
+
+                    SharedPreferences userEditor = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                    userEditor.edit().putString("user_role", role).apply();
+
                     Intent intent;
-                    if (which == 0) {
-                        intent = new Intent(this, GuardPhoneLoginActivity.class);
-                    } else {
-                        intent = new Intent(this, GuardEmailLoginActivity.class);
+
+                    switch (role) {
+                        case "schoolAdmin":
+                            intent = new Intent(this, HomeActivity.class);
+                            break;
+                        case "guardian":
+                            intent = new Intent(this, ParentDashboardActivity.class);
+                            break;
+                        case "guard":
+                            intent = new Intent(this, AddGuardian.class); // or GuardDashboard
+                            break;
+                        default:
+                            Toast.makeText(this, "Unrecognized role. Contact support.", Toast.LENGTH_SHORT).show();
+                            return;
                     }
+
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
+                    finish();
                 })
-                .setBackground(getDrawable(R.drawable.dialog_bg)) // optional for rounded corners
-                .show();
+                .addOnFailureListener(e -> {
+                    progress.setVisibility(View.GONE);
+                    Toast.makeText(this, "Error fetching role: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
+
+
+//    private void fallbackLoginForGuard(String email, String password) {
+//        FirebaseFirestore.getInstance().collection("guards")
+//                .whereEqualTo("email", email)
+//                .get()
+//                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    progress.setVisibility(View.GONE);
+//                    if (!queryDocumentSnapshots.isEmpty()) {
+//                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+//                        String storedPassword = doc.getString("password");
+//                        String role = doc.getString("role");
+//
+//                        if (storedPassword != null && storedPassword.trim().equals(password.trim()) && "guard".equals(role)) {
+//                            // ✅ Guard login success
+//                            SharedPreferences.Editor userEditor = getSharedPreferences("UserPrefs", MODE_PRIVATE).edit();
+//                            userEditor.putString("user_role", "guard");
+//                            userEditor.putString("guard_id", doc.getId());
+//                            userEditor.putString("guard_email", email);
+//                            userEditor.apply();
+//
+//                            Intent intent = new Intent(LoginActivity.this, AddGuardian.class); // or GuardDashboard
+//                            startActivity(intent);
+//                            finish();
+//                        } else {
+//                            Toast.makeText(this, "Invalid credentials for guard", Toast.LENGTH_SHORT).show();
+//                        }
+//                    } else {
+//                        Toast.makeText(this, "Authentication failed: invalid credentials", Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .addOnFailureListener(e -> {
+//                    progress.setVisibility(View.GONE);
+//                    Toast.makeText(this, "Login failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                });
+//    }
+//    private void showGuardLoginMethodDialog() {
+//        String[] options = {"Login with Phone (OTP)", "Login with Email & Password"};
+//
+//        new MaterialAlertDialogBuilder(this)
+//                .setTitle("Select Login Method")
+//                .setItems(options, (dialog, which) -> {
+//                    Intent intent;
+//                    if (which == 0) {
+//                        intent = new Intent(this, GuardPhoneLoginActivity.class);
+//                    } else {
+//                        intent = new Intent(this, GuardEmailLoginActivity.class);
+//                    }
+//                    startActivity(intent);
+//                })
+//                .setBackground(getDrawable(R.drawable.dialog_bg)) // optional for rounded corners
+//                .show();
+//    }
 
 
 

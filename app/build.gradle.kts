@@ -58,66 +58,75 @@ android {
     }
     packaging {
         resources {
-            excludes += "META-INF/NOTICE.md"
-            excludes += "META-INF/LICENSE.md"
-            excludes += "META-INF/NOTICE.txt"
-            excludes += "META-INF/LICENSE.txt"
+            excludes += setOf(
+                "META-INF/NOTICE.md",
+                "META-INF/LICENSE.md",
+                "META-INF/NOTICE.txt",
+                "META-INF/LICENSE.txt",
+                "META-INF/DEPENDENCIES"
+            )
         }
     }
+
 }
 
-
 dependencies {
+    // --- AndroidX & Core ---
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.core.ktx)
-    implementation(libs.play.services.maps)
-    implementation(libs.transport.api)
     implementation("androidx.gridlayout:gridlayout:1.1.0")
-    implementation("com.airbnb.android:lottie:6.0.0")
-    implementation(libs.firebase.appcheck.debug)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("com.facebook.shimmer:shimmer:0.5.0")
-
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
-
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation("com.google.firebase:firebase-auth:21.0.0")
-    implementation("com.google.firebase:firebase-database:21.0.0")
-    implementation("com.google.firebase:firebase-storage:21.0.1")
-    implementation("com.google.firebase:firebase-firestore:25.1.1")
-    implementation("com.google.firebase:firebase-appcheck-playintegrity:17.0.1")
-    implementation("com.google.android.gms:play-services-base:18.2.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-    implementation("com.google.zxing:core:3.4.1")
     implementation("androidx.preference:preference:1.2.0")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
+    // --- Firebase (BoM recommended) ---
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-messaging")
+    implementation(libs.firebase.appcheck.debug)
+
+    // --- Google & Maps ---
+    implementation(libs.play.services.maps)
+    implementation("com.google.android.gms:play-services-base:18.2.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // --- UI / Graphics ---
+    implementation("com.airbnb.android:lottie:6.4.0")
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // --- Camera & QR ---
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.4.1")
+
+    // --- Network & JSON ---
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("org.json:json:20230227")
+
+    // --- Mail & Cloud Storage ---
     implementation("com.sun.mail:android-mail:1.6.7")
     implementation("com.sun.mail:android-activation:1.6.7")
     implementation("com.cloudinary:cloudinary-android:2.1.0")
-    implementation("com.github.bumptech.glide:glide:4.15.1")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
-    implementation ("com.airbnb.android:lottie:6.4.0")
-
-
-    // Add the dependencies for the Crashlytics and Analytics libraries
-    // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-crashlytics")
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
     implementation("com.mailjet:mailjet-client:5.2.3")
 
+    // --- Google Auth (⚠ For server-side use only!) ---
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.17.0")
 
+    // --- Testing ---
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")

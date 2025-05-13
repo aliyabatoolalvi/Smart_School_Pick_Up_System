@@ -151,7 +151,7 @@ class GuardAddActivity : AppCompatActivity() {
         val password = binding.etPassword.text.toString().trim()
 
         val guardId = intent.getStringExtra("guardId") ?: db.collection("guards").document().id
-        val adminUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        val adminUid = sharedPref.getString("admin_uid", "") ?: ""
 
         val guard = hashMapOf(
             "id" to guardId,
@@ -172,12 +172,26 @@ class GuardAddActivity : AppCompatActivity() {
             if (!adminEmail.isNullOrEmpty() && !adminPassword.isNullOrEmpty()) {
                 mAuth.signInWithEmailAndPassword(adminEmail, adminPassword)
                     .addOnCompleteListener { task ->
-                        progressDialog.dismiss()
+                        val flags = getSharedPreferences("Flags", MODE_PRIVATE).edit()
+
                         if (task.isSuccessful) {
-                            Toast.makeText(this, "Guard ${if (isEdit) "updated" else "added"} successfully", Toast.LENGTH_SHORT).show()
+                            flags.putBoolean("retry_admin_login", false)
+                            flags.apply()
+
+                            Toast.makeText(
+                                this,
+                                "Guard ${if (isEdit) "updated" else "added"} successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            progressDialog.dismiss()
                             startActivity(Intent(this, GuardListActivity::class.java))
                             finish()
                         } else {
+                            flags.putBoolean("retry_admin_login", true)
+                            flags.apply()
+
+                            progressDialog.dismiss()
                             Toast.makeText(this, "Guard saved. Admin login failed.", Toast.LENGTH_LONG).show()
                         }
                     }

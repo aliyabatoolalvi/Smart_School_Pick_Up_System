@@ -105,14 +105,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
+
     private void fetchSchoolName() {
         if (mAuth.getCurrentUser() == null) {
             showToast("User not logged in");
@@ -150,4 +143,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            moveTaskToBack(true); // Minimizes the app instead of finishing it
+        }
+    }
+
 }

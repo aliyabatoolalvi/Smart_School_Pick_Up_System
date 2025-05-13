@@ -5,17 +5,34 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import java.util.Calendar;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import androidx.core.util.Pair;
+
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.finallab.smartschoolpickupsystem.Room.AppDatabase;
+import com.google.android.material.datepicker.MaterialDatePicker;
+
+
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,155 +45,155 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 public class ReportActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
-    private ReportAdapter reportAdapter;
+    ProgressBar progressBarReports;
     private FirebaseFirestore db;
-    private ProgressBar progressBar;
-    private TextView emptyText;
-    private Button backButton;
-    private AppDatabase localDb;
+    private ImageView backarrow;
+    private RecyclerView recyclerView;
+    private ReportAdapter adapter;
+    private List<PickUpReport> reportList = new ArrayList<>();
+    private BarChart delayChart;
+
+
+
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-
-        recyclerView = findViewById(R.id.recyclerViewReports);
-        progressBar = findViewById(R.id.progressBarReports);
-        emptyText = findViewById(R.id.emptyText);
-        backButton = findViewById(R.id.backbtn2);
-
+        Log.d("ReportDebug", "PickupReportActivity launched");
+        Toast.makeText(this, "ReportActivity started", Toast.LENGTH_SHORT).show();
+        recyclerView = findViewById(R.id.reportRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        reportAdapter = new ReportAdapter(new ArrayList<>(), false); // false = not admin
-        recyclerView.setAdapter(reportAdapter);
+        adapter = new ReportAdapter(reportList, this, false);
+        recyclerView.setAdapter(adapter);
+        progressBarReports = findViewById(R.id.progressBarReports);
+        delayChart = findViewById(R.id.delayChart);
+
+        backarrow=findViewById(R.id.back_arrow);
+
+        backarrow.setOnClickListener(v -> finish());
 
         db = FirebaseFirestore.getInstance();
-
-        backButton.setOnClickListener(v -> finish());
-
-        loadReports();
-    }
-
-    private void loadReports() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
-            Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show();
-            finish();
+            Toast.makeText(this, "Not logged in", Toast.LENGTH_SHORT).show();
+            progressBarReports.setVisibility(View.GONE);
+            Log.e("ReportDebug", "FirebaseAuth user is null");
             return;
         }
 
         String guardianUID = currentUser.getUid();
-        progressBar.setVisibility(View.VISIBLE);
-
-        db.collection("pick_up_activities")
-                .whereEqualTo("guardianUID", guardianUID)
-                .orderBy("pickUpTime", Query.Direction.DESCENDING)
+        db.collection("guardians").document(guardianUID)
                 .get()
-                .addOnSuccessListener(snapshot -> {
-                    progressBar.setVisibility(View.GONE);
-                    List<PickUpReport> reports = new ArrayList<>();
-                    List<PickUpReport> entities = new ArrayList<>();
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        List<String> studentDocIds = (List<String>) doc.get("students");
 
-                    for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                        PickUpReport report = doc.toObject(PickUpReport.class);
-                        if (report != null) {
-                            reports.add(report);
-
-                            PickUpReport entity = new PickUpReport();
-                            entity.setStudentName(report.getStudentName());
-                            entity.setTimestamp(report.getTimestamp());
-                            entity.setReportText(report.getReportText());
-                            entity.setGuardianName(report.getGuardName());
-                            entities.add(entity);
+                        if (studentDocIds != null && !studentDocIds.isEmpty()) {
+                            fetchReports(studentDocIds);
+                        } else {
+                            progressBarReports.setVisibility(View.GONE);
                         }
-                    }
-
-                    if (reports.isEmpty()) {
-                        showEmptyState("🚫 No reports found");
                     } else {
-                        emptyText.setVisibility(View.GONE);
-                        recyclerView.setVisibility(View.VISIBLE);
-                        reportAdapter.updateReports(reports);
-
-                        new Thread(() -> {
-                            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "guardian_local_db").build();
-                            db.pickUpReportDao().insertReports(entities);
-                        }).start();
+                        progressBarReports.setVisibility(View.GONE);
+                        Toast.makeText(this, "Guardian not registered", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    new Thread(() -> {
-                        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "guardian_local_db").build();
-                        List<PickUpReport> cached = db.pickUpReportDao().getAllReports();
-
-                        List<PickUpReport> fallbackList = new ArrayList<>();
-                        for (PickUpReport r : cached) {
-                            PickUpReport report = new PickUpReport();
-                            report.setStudentName(r.getStudentName());
-                            report.setTimestamp(r.getTimestamp());
-                            report.setReportText(r.getReportText());
-                            report.setGuardianName(r.getGuardName());
-                            fallbackList.add(report);
-                        }
-
-                        runOnUiThread(() -> {
-                            reportAdapter.updateReports(fallbackList);
-                            recyclerView.setVisibility(View.VISIBLE);
-                            Toast.makeText(this, "Showing offline data", Toast.LENGTH_SHORT).show();
-                        });
-                    }).start();
+                    progressBarReports.setVisibility(View.GONE);
+                    Toast.makeText(this, "Failed to load reports", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void exportToPdf() {
-        PdfDocument pdfDocument = new PdfDocument();
-        Paint paint = new Paint();
-        int y = 50;
+    private void fetchReports(List<String> studentDocIds) {
+        int chunkSize = 10;
+        for (int i = 0; i < studentDocIds.size(); i += chunkSize) {
+            List<String> chunk = studentDocIds.subList(i, Math.min(i + chunkSize, studentDocIds.size()));
 
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
-        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-        Canvas canvas = page.getCanvas();
+            db.collection("pick_up_activities")
+                    .whereIn("studentId", chunk)
 
-        paint.setTextSize(14f);
-        canvas.drawText("Pickup Report", 50, y, paint);
-        y += 30;
+                    .get()
+                    .addOnSuccessListener(querySnapshots -> {
+                        Map<String, Integer> delayData = new LinkedHashMap<>();
 
-        for (PickUpReport report : reportAdapter.getReports()) {
-            String line = report.getReportText() != null ? report.getReportText() :
-                    report.getStudentName() + " - " + new SimpleDateFormat("dd MMM yyyy, hh:mm a").format(report.getTimestamp());
-            canvas.drawText(line, 50, y, paint);
-            y += 25;
+                        for (DocumentSnapshot doc : querySnapshots) {
+                            String studentName = doc.getString("studentName");
+                            String deviation = doc.getString("deviation");
+                            String pickedBy = doc.getString("guardianName");
+                            String pickedByUID = doc.getString("guardianId");
+                            Timestamp ts = doc.getTimestamp("timestamp");
 
-            if (y > 800) {
-                pdfDocument.finishPage(page);
-                page = pdfDocument.startPage(pageInfo);
-                canvas = page.getCanvas();
-                y = 50;
+                            PickUpReport report = new PickUpReport(studentName, ts, deviation, pickedBy, pickedByUID);
+                            reportList.add(report);
+
+                            if (deviation != null && deviation.contains("minutes")) {
+                                try {
+                                    String[] parts = deviation.split(" ");
+                                    int minutes = Integer.parseInt(parts[0]);
+                                    String formattedTime = new SimpleDateFormat("MMM dd, yyyy - hh:mm a", Locale.getDefault())
+                                            .format(ts.toDate());
+
+                                    delayData.put(formattedTime, minutes);
+                                } catch (Exception ignored) {}
+                            }
+                        }
+
+                        adapter.notifyDataSetChanged();
+                        progressBarReports.setVisibility(View.GONE);
+                        showDelayBarChart(delayData);
+
+
+                    });
+        }
+    }
+
+    private void showDelayBarChart(Map<String, Integer> delayData) {
+        List<BarEntry> entries = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+
+        int index = 0;
+
+        for (Map.Entry<String, Integer> entry : delayData.entrySet()) {
+            int delay = entry.getValue();
+            entries.add(new BarEntry(index, delay));
+            labels.add(entry.getKey());
+
+
+            if (delay > 30) {
+                colors.add(Color.RED);
+            } else {
+                colors.add(Color.BLUE);
             }
+            index++;
         }
 
-        pdfDocument.finishPage(page);
+        BarDataSet dataSet = new BarDataSet(entries, "Delay in Minutes");
+        dataSet.setColors(colors); // Set individual colors per bar
 
-        try {
-            File file = new File(getExternalFilesDir(null), "PickupReport.pdf");
-            pdfDocument.writeTo(new FileOutputStream(file));
-            Toast.makeText(this, "PDF saved to: " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to save PDF", Toast.LENGTH_SHORT).show();
-        }
+        BarData barData = new BarData(dataSet);
+        barData.setBarWidth(0.9f);
 
-        pdfDocument.close();
+        delayChart.setData(barData);
+        delayChart.setFitBars(true);
+        delayChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
+        delayChart.getXAxis().setGranularity(1f);
+        delayChart.getXAxis().setGranularityEnabled(true);
+        delayChart.getXAxis().setLabelRotationAngle(-45);
+        delayChart.invalidate();
     }
 
-    private void showEmptyState(String message) {
-        progressBar.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.GONE);
-        emptyText.setText(message);
-        emptyText.setVisibility(View.VISIBLE);
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
 }
+

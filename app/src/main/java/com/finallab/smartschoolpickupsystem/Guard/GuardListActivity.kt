@@ -2,6 +2,7 @@ package com.finallab.smartschoolpickupsystem.Guard
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,7 @@ class GuardListActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         currentAdminUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        Log.d("GuardListActivity", "Current Admin UID: $currentAdminUid")
 
         binding.rvc.layoutManager = LinearLayoutManager(this)
 

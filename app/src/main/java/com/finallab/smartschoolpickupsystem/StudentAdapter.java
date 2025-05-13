@@ -22,7 +22,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
-
 import java.util.List;
 
 public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentViewHolder> {
@@ -54,8 +53,8 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
 
         Glide.with(context)
                 .load(TextUtils.isEmpty(student.getImage()) ? R.drawable.img_5 : student.getImage().trim()) // Provide fallback if the URL is empty or invalid
-                .placeholder(R.drawable.img_5) // Show placeholder while loading
-                .error(R.drawable.img_5) // Show default error image if it fails
+                .placeholder(R.drawable.student_default) // Show placeholder while loading
+                .error(R.drawable.student_default) // Show default error image if it fails
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .listener(new RequestListener<Drawable>() {
                     @Override

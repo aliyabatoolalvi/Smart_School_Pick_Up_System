@@ -20,6 +20,9 @@
         tools:replace="fullBackupContent"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.AdminFeedbackActivity"
+            android:exported="false" />
+        <activity
             android:name=".Guard.GuardEmailLoginActivity"
             android:exported="false" />
         <!--
@@ -85,6 +88,8 @@
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
+        <activity android:name=".FeedBackHistoryactivity"></activity>
+        <activity android:name=".GuardianNotificationactivity" />
         <activity
             android:name=".Feedbackactivity"
             android:exported="false" />
@@ -102,14 +107,14 @@
             android:exported="false" />
         <activity
             android:name=".Guard.GuardSplash"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".Guard.ScannerActivity"
             android:exported="true"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Guard.GuardListActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".Guard.GuardAddActivity"
             android:exported="true" />
@@ -122,6 +127,8 @@
         <activity
             android:name=".Guard.GuardPhoneLoginActivity"
             android:exported="true" />
+        <activity android:name=".Guard.ManualPickupActivity"></activity>
+        <activity android:name=".Guard.ReportSuccessActivity"></activity>
 
         <meta-data
             android:name="preloaded_fonts"

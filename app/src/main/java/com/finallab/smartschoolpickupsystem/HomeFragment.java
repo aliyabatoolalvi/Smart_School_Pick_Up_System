@@ -18,6 +18,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.finallab.smartschoolpickupsystem.Activities.AddGuardian;
 import com.finallab.smartschoolpickupsystem.Activities.AddStudentActivity;
+import com.finallab.smartschoolpickupsystem.Activities.AdminFeedbackActivity;
 import com.finallab.smartschoolpickupsystem.Activities.AdminReport;
 import com.finallab.smartschoolpickupsystem.Activities.MainActivity;
 import com.finallab.smartschoolpickupsystem.Guard.GuardAddActivity;
@@ -93,6 +94,13 @@ public class HomeFragment extends Fragment {
             Intent intent = new Intent(getActivity(), AddGuardian.class);
             startActivity(intent);
         });
+
+        feedbackBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AdminFeedbackActivity.class);
+            startActivity(intent);
+        });
+
+
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         final String userId = currentUser != null ? currentUser.getUid() : null; // Effectively final

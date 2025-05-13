@@ -64,7 +64,7 @@ class AdminReport : AppCompatActivity() {
         emptyText = findViewById(R.id.emptyText)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        reportAdapter = ReportAdapter(ArrayList(), true)
+        reportAdapter = ReportAdapter(ArrayList(), this,true)
         recyclerView.adapter = reportAdapter
 
         db = FirebaseFirestore.getInstance()
@@ -135,7 +135,7 @@ class AdminReport : AppCompatActivity() {
         val format = SimpleDateFormat("EEE", Locale.getDefault())
 
         for (report in reports) {
-            val day = report.timestamp?.let { format.format(it) } ?: continue
+            val day = report.timestamp?.toDate()?.let { format.format(it) } ?: continue
             when {
                 report.method.equals("Manual CNIC", true) -> {
                     manualCounts[day] = (manualCounts[day] ?: 0) + 1
@@ -193,17 +193,23 @@ class AdminReport : AppCompatActivity() {
 
 
     private fun detectLatePickups(reports: List<PickUpReport>) {
+        val format = SimpleDateFormat("MMM dd, yyyy - hh:mm a", Locale.getDefault())
+
         for (report in reports) {
-            report.timestamp?.let {
+            try {
+                val date = report.timestamp?.toDate() ?: continue
                 val cal = Calendar.getInstance()
-                cal.time = it
+                cal.time = date
                 val hour = cal.get(Calendar.HOUR_OF_DAY)
                 if (hour >= 16) {
                     println("Late pickup detected: ${report.studentName} at $hour:00")
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
+
 
     private fun savePdfToUri(uri: Uri) {
         val pdfDocument = PdfDocument()
@@ -219,7 +225,8 @@ class AdminReport : AppCompatActivity() {
         val format = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
 
         for (report in allReports) {
-            val line = report.reportText ?: "${report.studentName} - ${format.format(report.timestamp ?: Date())}"
+            val date = report.timestamp?.toDate() ?: Date()
+            val line = report.reportText ?: "${report.studentName} - ${format.format(date)}"
             canvas.drawText(line, 50f, y.toFloat(), paint)
             y += 25
             if (y > 800) {
@@ -229,6 +236,7 @@ class AdminReport : AppCompatActivity() {
                 y = 50
             }
         }
+
         pdfDocument.finishPage(page)
 
         try {

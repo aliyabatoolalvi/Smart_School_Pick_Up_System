@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,31 +31,35 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-
 public class ProfileActivity extends AppCompatActivity {
-    private ImageView profilePicture;
+    private ImageView profilePicture,backArrow;
     private TextView name, email, cnic, phone;
     private Button backButton;
     private FirebaseFirestore db;
     private AppDatabase localDb;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        profilePicture = findViewById(R.id.parent_profile_image);
-        name = findViewById(R.id.guardian_name);
-        email = findViewById(R.id.guardian_email);
-        cnic = findViewById(R.id.guardian_cnic);
-        phone = findViewById(R.id.guardian_phone);
-        backButton = findViewById(R.id.back_to_dashboard);
+        profilePicture = findViewById(R.id.profile1);
+        name = findViewById(R.id.name2);
+        email = findViewById(R.id.email2);
+        cnic = findViewById(R.id.cnic2);
+        phone = findViewById(R.id.phone2);
+         backArrow = findViewById(R.id.back_arrow);
+
+
 
         db = FirebaseFirestore.getInstance();
-        localDb = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "guardian_local_db").build();
+        localDb = AppDatabase.getDatabase(getApplicationContext());
+
 
         loadUserProfile();
 
-        backButton.setOnClickListener(v -> finish());
+        backArrow.setOnClickListener(v -> finish());
     }
 
     private void loadUserProfile() {
